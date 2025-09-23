@@ -1881,21 +1881,28 @@ if ((index*chunkSize)>=len){
          const shouldNotDecode = pages[pageIndex].includes('2006:') || pages[pageIndex].includes('2024:');
          
          if (shouldNotDecode) {
-           // Show permanently scrambled text for 2006 and 2024 sections
+           // Show static scrambled text for 2006 and 2024 sections - no decoding animation
            let scrambled = pages[pageIndex].split('');
            const len = pages[pageIndex].length;
+           // Create a consistent scrambled version (same seed for same text)
+           const seed = pageIndex; // Use page index as seed for consistency
+           let random = seed;
            for (let i=0;i<len;i++) {
-             scrambled[i] = /\s/.test(pages[pageIndex][i]) ? pages[pageIndex][i] : chars[Math.floor(Math.random()*chars.length)];
+             if (/\s/.test(pages[pageIndex][i])) {
+               scrambled[i] = pages[pageIndex][i]; // Keep spaces and newlines
+             } else {
+               // Simple seeded random for consistent scrambling
+               random = (random * 9301 + 49297) % 233280;
+               scrambled[i] = chars[Math.floor((random / 233280) * chars.length)];
+             }
            }
            el.textContent = scrambled.join('');
            
-           // Show nav message after a short delay
-           setTimeout(() => {
-             if (currentPage < 2) {
-               navMsg.textContent='PRESS SPACEBAR TO CONTINUE';
-               navMsg.style.visibility='visible';
-             }
-           }, 1000);
+           // Show nav message immediately since no animation
+           if (currentPage < 2) {
+             navMsg.textContent='PRESS SPACEBAR TO CONTINUE';
+             navMsg.style.visibility='visible';
+           }
          } else {
            scrambleFastChunks(el, pages[pageIndex], () => {
            // Text displayed
