@@ -1368,7 +1368,7 @@ console.warn('Could not load image modes from localStorage:', e);
     const el = document.getElementById('unscramble');
     const promptElem = document.getElementById('prompt');
     const navMsg = document.getElementById('nav-msg');
-    const pageCounterEl = document.getElementById('current-page');
+    const pageCounterEl = document.getElementById('page-counter');
 
     let currentPage = 0;
     let isAnimating = false;
@@ -1849,7 +1849,7 @@ if ((index*chunkSize)>=len){
         if (pageIndex < 0) pageIndex = pages.length - 1;
         currentPage = pageIndex;
         
-        pageCounterEl.textContent = `SLIDE ${pageIndex + 1}/${pages.length}`;
+        pageCounterEl.textContent = `SLIDE ${pageIndex + 1} OF ${pages.length}`;
         navMsg.style.visibility = 'hidden';
         
         // Set data-page attribute for CSS targeting
