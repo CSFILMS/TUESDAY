@@ -1849,7 +1849,7 @@ if ((index*chunkSize)>=len){
         if (pageIndex < 0) pageIndex = pages.length - 1;
         currentPage = pageIndex;
         
-        pageCounterEl.textContent = pageIndex + 1;
+        pageCounterEl.textContent = `SLIDE ${pageIndex + 1}/${pages.length}`;
         navMsg.style.visibility = 'hidden';
         
         // Set data-page attribute for CSS targeting
