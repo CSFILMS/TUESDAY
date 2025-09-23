@@ -568,7 +568,8 @@ PRESS [F] FOR FULL SCREEN
 
 A FILM BY EUGENE JARECKI
 
-Types on: 6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH
+
+6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH
 
 
 
@@ -1876,7 +1877,27 @@ if ((index*chunkSize)>=len){
          // Check if this is the Collateral Murder video slide
          const isCollateralMurderSlide = pages[pageIndex].includes('It published the infamous Collateral Murder video in 2010');
          
-         scrambleFastChunks(el, pages[pageIndex], () => {
+         // Check if this page contains 2006 or 2024 content that should stay scrambled
+         const shouldNotDecode = pages[pageIndex].includes('2006:') || pages[pageIndex].includes('2024:');
+         
+         if (shouldNotDecode) {
+           // Show permanently scrambled text for 2006 and 2024 sections
+           let scrambled = pages[pageIndex].split('');
+           const len = pages[pageIndex].length;
+           for (let i=0;i<len;i++) {
+             scrambled[i] = /\s/.test(pages[pageIndex][i]) ? pages[pageIndex][i] : chars[Math.floor(Math.random()*chars.length)];
+           }
+           el.textContent = scrambled.join('');
+           
+           // Show nav message after a short delay
+           setTimeout(() => {
+             if (currentPage < 2) {
+               navMsg.textContent='PRESS SPACEBAR TO CONTINUE';
+               navMsg.style.visibility='visible';
+             }
+           }, 1000);
+         } else {
+           scrambleFastChunks(el, pages[pageIndex], () => {
            // Text displayed
            if (isCollateralMurderSlide) {
              console.log('Collateral Murder slide detected, starting animation...');
@@ -1893,6 +1914,7 @@ if ((index*chunkSize)>=len){
              }, 1000); // Wait 1 second after text is displayed
            }
          });
+         }
        }
        
        showImage(pageIndex);
