@@ -569,6 +569,8 @@ PRESS [F] FOR FULL SCREEN
 A FILM BY EUGENE JARECKI
 
 
+
+
 6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH
 
 
@@ -1813,11 +1815,6 @@ currentInterval = null;
       // Initialize audio context on first user interaction
       initAudioContext();
 
-      // Check if this text contains both "A FILM BY" and "6BDM" for special timing
-      const needsFilmByDelay = text.includes('A FILM BY EUGENE JARECKI') && text.includes('6BDM:');
-      const filmByIndex = needsFilmByDelay ? text.indexOf('A FILM BY EUGENE JARECKI') : -1;
-      let delayTriggered = false;
-
       currentInterval = setInterval(() => {
 const display = scrambled.slice();
 for (let i=0;i<index;i++){
@@ -1829,45 +1826,6 @@ element.textContent = display.join('');
 
 // Play synchronized beep for this chunk
 playDecodingBeeps(index, totalChunks);
-
-// Check if we need to pause after "A FILM BY EUGENE JARECKI" is fully decoded
-if (needsFilmByDelay && !delayTriggered && (index * chunkSize) > filmByIndex + 25) {
-  delayTriggered = true;
-  clearInterval(currentInterval);
-  console.log('A FILM BY fully decoded - pausing for 5 seconds...');
-  
-  setTimeout(() => {
-    console.log('5 second pause complete - continuing decode...');
-    // Resume decoding from where we left off
-    currentInterval = setInterval(() => {
-      const display2 = scrambled.slice();
-      for (let i=0;i<index;i++){
-        let s=i*chunkSize, e=Math.min(s+chunkSize,len);
-        for (let j=s;j<e;j++) display2[j]=text[j];
-      }
-      for (let k=index*chunkSize;k<len;k++) display2[k] = /\s/.test(text[k]) ? text[k] : chars[Math.floor(Math.random()*chars.length)];
-      element.textContent = display2.join('');
-      
-      playDecodingBeeps(index, totalChunks);
-      
-      index++;
-      if ((index*chunkSize)>=len){
-        clearInterval(currentInterval);
-        currentInterval = null;
-        truncateTextToFit(element, text);
-        isAnimating=false;
-        
-        if (currentPage < 2) {
-          navMsg.textContent='PRESS SPACEBAR TO CONTINUE';
-          navMsg.style.visibility='visible';
-        }
-        
-        onComplete && onComplete();
-      }
-    }, 100);
-  }, 5000);
-  return;
-}
 
 index++;
 if ((index*chunkSize)>=len){
@@ -1882,7 +1840,15 @@ if ((index*chunkSize)>=len){
   navMsg.style.visibility='visible';
   }
   
-  onComplete && onComplete();
+  // Check if this text contains "A FILM BY" and add 5-second delay before calling onComplete
+  if (text.includes('A FILM BY EUGENE JARECKI')) {
+    console.log('A FILM BY detected - adding 5 second delay before continuing...');
+    setTimeout(() => {
+      onComplete && onComplete();
+    }, 5000); // 5 second delay
+  } else {
+    onComplete && onComplete();
+  }
 }
       },100);
     }
