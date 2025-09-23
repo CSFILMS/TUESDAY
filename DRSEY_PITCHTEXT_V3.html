@@ -1838,7 +1838,15 @@ if ((index*chunkSize)>=len){
   navMsg.style.visibility='visible';
   }
   
-  onComplete && onComplete();
+  // Check if this text contains "A FILM BY" and add 5-second delay before calling onComplete
+  if (text.includes('A FILM BY EUGENE JARECKI')) {
+    console.log('A FILM BY detected - adding 5 second delay before continuing...');
+    setTimeout(() => {
+      onComplete && onComplete();
+    }, 5000); // 5 second delay
+  } else {
+    onComplete && onComplete();
+  }
 }
       },100);
     }
@@ -2371,5 +2379,6 @@ if (mode === 'full') {
   
 </body>
 </html>
-U p d a t e   t i m e s t a m p :   0 9 / 2 3 / 2 0 2 5   2 2 : 5 8 : 1 8  
+U p d a t e   t i m e s t a m p :   0 9 / 2 3 / 2 0 2 5   2 2 : 5 8 : 1 8 
+ 
  
