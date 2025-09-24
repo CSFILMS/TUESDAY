@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <title>Terminal Access</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
     /* Font Definitions */
     @font-face {
       font-family: 'IBM3270';
-      src: url('fonts/fonts/3270-Regular.woff2') format('woff2'),
-           url('fonts/fonts/3270-Regular.ttf') format('truetype'),
+      src: url('fonts/fonts/3270-Regular.ttf') format('truetype'),
            url('fonts/fonts/3270-Regular.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
+      font-display: swap; /* Better loading performance */
     }
     
     @font-face {
@@ -20,6 +20,7 @@
       src: url('fonts/fonts/PixelCarnageMono.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
+      font-display: swap;
     }
     
     @font-face {
@@ -27,6 +28,7 @@
       src: url('fonts/fonts/Crisp.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
+      font-display: swap;
     }
     
     @font-face {
@@ -34,6 +36,7 @@
       src: url('fonts/fonts/ProggyCleanCE.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
+      font-display: swap;
     }
     
     @font-face {
@@ -41,6 +44,7 @@
       src: url('fonts/fonts/ProggySquare.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
+      font-display: swap;
     }
     
     :root { 
@@ -199,6 +203,85 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
+    
+    /* MOBILE RESPONSIVE FIXES */
+    @media screen and (max-width: 768px) {
+      body {
+        font-size: 1.0rem; /* Smaller base font size for mobile */
+        line-height: 1.4;
+      }
+      
+      #terminal {
+        top: 5vh;
+        left: 5vw;
+        right: 5vw;
+        max-width: 90vw; /* Take up more screen width on mobile */
+        padding: 0 2vw;
+      }
+      
+      input {
+        width: 70vw; /* Wider input on mobile */
+        font-size: 1.0rem;
+      }
+      
+      .line {
+        margin: 0.5vh 0; /* Tighter spacing on mobile */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+      }
+      
+      /* Adjust font sizes for mobile */
+      #boot, #prompt, #msg, input {
+        font-size: 1.0rem !important;
+      }
+    }
+    
+    @media screen and (max-width: 480px) {
+      body {
+        font-size: 0.9rem; /* Even smaller for very small screens */
+      }
+      
+      #terminal {
+        top: 3vh;
+        left: 3vw;
+        right: 3vw;
+        max-width: 94vw;
+        padding: 0 1vw;
+      }
+      
+      input {
+        width: 80vw;
+        font-size: 0.9rem;
+      }
+      
+      #boot, #prompt, #msg, input {
+        font-size: 0.9rem !important;
+      }
+      
+      .line {
+        margin: 0.3vh 0;
+      }
+    }
+    
+    /* LANDSCAPE MOBILE FIXES */
+    @media screen and (max-height: 500px) and (orientation: landscape) {
+      #terminal {
+        top: 2vh;
+        font-size: 0.8rem;
+      }
+      
+      body {
+        font-size: 0.8rem;
+      }
+      
+      #boot, #prompt, #msg, input {
+        font-size: 0.8rem !important;
+      }
+      
+      .line {
+        margin: 0.2vh 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -217,23 +300,37 @@
   <script src="script.js?v=6"></script>
   
   <script>
-    // SIMPLE ZOOM SYSTEM - MATCH LOREM DEFAULTS
-    let fontSize = 1.4;
+    // MOBILE-AWARE ZOOM SYSTEM
+    function getBaseFontSize() {
+      // Detect mobile and adjust base font size
+      const isMobile = window.innerWidth <= 768;
+      const isSmallMobile = window.innerWidth <= 480;
+      const isLandscape = window.innerHeight <= 500 && window.innerWidth > window.innerHeight;
+      
+      if (isLandscape) return 0.8;
+      if (isSmallMobile) return 0.9;
+      if (isMobile) return 1.0;
+      return 1.4; // Desktop default
+    }
+    
+    let fontSize = getBaseFontSize();
     
     function zoomIn() {
-      fontSize = Math.min(fontSize + 0.15, 2.5);
+      const maxSize = window.innerWidth <= 768 ? 1.8 : 2.5; // Lower max on mobile
+      fontSize = Math.min(fontSize + 0.1, maxSize); // Smaller increments
       updateFontSize();
       console.log('Zoom IN:', fontSize + 'rem');
     }
     
     function zoomOut() {
-      fontSize = Math.max(fontSize - 0.15, 0.6);
+      const minSize = window.innerWidth <= 768 ? 0.5 : 0.6; // Lower min on mobile
+      fontSize = Math.max(fontSize - 0.1, minSize); // Smaller increments
       updateFontSize();
       console.log('Zoom OUT:', fontSize + 'rem');
     }
     
     function resetZoom() {
-      fontSize = 1.4;
+      fontSize = getBaseFontSize();
       updateFontSize();
       console.log('Zoom RESET:', fontSize + 'rem');
     }
@@ -465,17 +562,48 @@
     console.log('Terminal interface initialized');
     console.log('Controls: +/- font size, 0 reset size, F fullscreen, 1/2/3 colors, Z/X/C glow, B/N font cycle');
     
-    // Custom cursor functionality
+    // Custom cursor functionality - hide on mobile
     const customCursor = document.getElementById('custom-cursor');
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
     
-    document.addEventListener('mousemove', (e) => {
-      customCursor.style.left = e.clientX + 'px';
-      customCursor.style.top = e.clientY + 'px';
-      customCursor.style.display = 'block';
-    });
-    
-    document.addEventListener('mouseleave', () => {
+    if (!isMobileDevice) {
+      document.addEventListener('mousemove', (e) => {
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+        customCursor.style.display = 'block';
+      });
+      
+      document.addEventListener('mouseleave', () => {
+        customCursor.style.display = 'none';
+      });
+    } else {
+      // Hide custom cursor on mobile and restore default cursor
       customCursor.style.display = 'none';
+      document.body.style.cursor = 'auto';
+      
+      // Add touch support for mobile input focus
+      document.addEventListener('touchstart', (e) => {
+        if (elements.passwordInput && e.target !== elements.passwordInput) {
+          elements.passwordInput.focus();
+        }
+      });
+    }
+    
+    // Handle window resize and orientation changes for mobile
+    function handleResize() {
+      // Recalculate base font size for new screen dimensions
+      const newBaseFontSize = getBaseFontSize();
+      fontSize = newBaseFontSize;
+      updateFontSize();
+      applyCurrentFont();
+      console.log('Screen resized, font size adjusted to:', fontSize);
+    }
+    
+    // Add resize event listener with debouncing
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(handleResize, 250);
     });
     
     // Initialize color scheme, font size, and default font
