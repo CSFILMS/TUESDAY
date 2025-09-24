@@ -1381,6 +1381,8 @@ console.warn('Could not load image modes from localStorage:', e);
     let availableKeywords = new Set(); // Store available photo keywords
     let audioTimeout = null; // Track audio timeout
     let lineRevealTimeouts = []; // Track line reveal timeouts
+    let isInLineRevealMode = false;
+    let lineRevealState = { lines: [], currentIndex: 0, element: null, onComplete: null };
 
     // Test if a specific photo file exists
     function testPhotoExists(keyword, format) {
@@ -1870,45 +1872,54 @@ if ((index*chunkSize)>=len){
       lineRevealTimeouts = [];
       
       isAnimating = true;
+      isInLineRevealMode = true;
       promptElem.style.visibility = 'hidden';
-      navMsg.style.visibility = 'hidden';
       
       const lines = text.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
-      let currentLineIndex = 0;
       element.textContent = '';
       
-      console.log('Starting line-by-line reveal for 2006-2024 content...');
+      // Set up line reveal state
+      lineRevealState = {
+        lines: lines,
+        currentIndex: 0,
+        element: element,
+        onComplete: onComplete
+      };
       
-      function showNextLine() {
-        if (currentLineIndex < lines.length) {
-          // Add the current line
-          if (currentLineIndex > 0) {
-            element.textContent += '\n\n';
-          }
-          element.textContent += lines[currentLineIndex];
-          
-          console.log(`Revealed line ${currentLineIndex + 1}: "${lines[currentLineIndex]}"`);
-          currentLineIndex++;
-          
-          // Schedule next line after 3 seconds and track the timeout
-          const timeoutId = setTimeout(showNextLine, 3000);
-          lineRevealTimeouts.push(timeoutId);
+      console.log('Starting manual line-by-line reveal for 2006-2024 content...');
+      console.log(`Total lines to reveal: ${lines.length}`);
+      
+      // Show the first line immediately
+      showNextLineManual();
+    }
+    
+    function showNextLineManual() {
+      if (lineRevealState.currentIndex < lineRevealState.lines.length) {
+        // Add the current line
+        if (lineRevealState.currentIndex > 0) {
+          lineRevealState.element.textContent += '\n\n';
+        }
+        lineRevealState.element.textContent += lineRevealState.lines[lineRevealState.currentIndex];
+        
+        console.log(`Revealed line ${lineRevealState.currentIndex + 1}: "${lineRevealState.lines[lineRevealState.currentIndex]}"`);
+        lineRevealState.currentIndex++;
+        
+        // Show instruction for next line or completion
+        if (lineRevealState.currentIndex < lineRevealState.lines.length) {
+          navMsg.textContent = 'PRESS SPACEBAR OR → FOR NEXT LINE';
+          navMsg.style.visibility = 'visible';
         } else {
           // All lines revealed
           console.log('All lines revealed, finishing...');
           isAnimating = false;
+          isInLineRevealMode = false;
           
-          if (currentPage < 2) {
-            navMsg.textContent = 'PRESS SPACEBAR TO CONTINUE';
-            navMsg.style.visibility = 'visible';
-          }
+          navMsg.textContent = 'PRESS SPACEBAR TO CONTINUE';
+          navMsg.style.visibility = 'visible';
           
-          onComplete && onComplete();
+          lineRevealState.onComplete && lineRevealState.onComplete();
         }
       }
-      
-      // Start revealing lines
-      showNextLine();
     }
 
          /* ================== PAGE RENDER ================== */
@@ -1920,6 +1931,9 @@ if ((index*chunkSize)>=len){
         // Clear any ongoing line reveal timeouts when changing pages
         lineRevealTimeouts.forEach(timeout => clearTimeout(timeout));
         lineRevealTimeouts = [];
+        
+        // Reset line reveal mode
+        isInLineRevealMode = false;
         
         pageCounterEl.textContent = `SLIDE ${pageIndex + 1} OF ${pages.length}`;
         navMsg.style.visibility = 'hidden';
@@ -2141,6 +2155,12 @@ if ((index*chunkSize)>=len){
     window.addEventListener('keydown', (e) => {
       // Mute any keyboard sounds
       e.preventDefault();
+      
+      // Check if we're in line reveal mode first
+      if (isInLineRevealMode && (e.code==='Space'||e.code==='ArrowRight')) {
+        showNextLineManual();
+        return;
+      }
       
       if (e.code==='Space'||e.code==='ArrowRight'){ startPage(currentPage+1); }
       else if (e.code==='ArrowLeft'){ startPage(currentPage-1); }
