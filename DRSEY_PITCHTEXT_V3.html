@@ -917,8 +917,7 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       setTimeout(() => {
         if (navMsg) {
           navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
-          navMsg.style.fontSize = '1.8rem';
-          navMsg.style.textAlign = 'center';
+          navMsg.style.fontSize = '0.9rem';
           navMsg.style.color = '';
         }
       }, 1000);
@@ -1845,8 +1844,7 @@ if ((index*chunkSize)>=len){
   // Only show "PRESS SPACEBAR TO CONTINUE" for first 2 pages
   if (currentPage < 2) {
   navMsg.innerHTML='PRESS SPACEBAR<br>TO CONTINUE';
-  navMsg.style.fontSize = '1.8rem'; // Make it bigger
-  navMsg.style.textAlign = 'center';
+  navMsg.style.fontSize = '0.9rem';
   navMsg.style.visibility='visible';
   }
   
@@ -1882,80 +1880,42 @@ if ((index*chunkSize)>=len){
       const lines = text.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
       element.textContent = '';
       
-      // Group lines by year/date
-      const yearGroups = [];
-      let currentGroup = [];
-      
-      lines.forEach(line => {
-        // Check if line starts with a year (4 digits followed by colon or hyphen)
-        const startsWithYear = /^\d{4}[:|-]/.test(line.trim());
-        
-        if (startsWithYear && currentGroup.length > 0) {
-          // Save previous group and start new one
-          yearGroups.push([...currentGroup]);
-          currentGroup = [line];
-        } else {
-          // Add to current group
-          currentGroup.push(line);
-        }
-      });
-      
-      // Add the last group
-      if (currentGroup.length > 0) {
-        yearGroups.push(currentGroup);
-      }
-      
-      // Set up line reveal state with grouped content
+      // Set up line reveal state
       lineRevealState = {
-        yearGroups: yearGroups,
-        currentGroupIndex: 0,
+        lines: lines,
+        currentIndex: 0,
         element: element,
         onComplete: onComplete
       };
       
-      console.log('Starting manual year-by-year reveal for 2006-2024 content...');
-      console.log(`Total year groups to reveal: ${yearGroups.length}`);
-      console.log('Groups:', yearGroups);
+      console.log('Starting manual line-by-line reveal for 2006-2024 content...');
+      console.log(`Total lines to reveal: ${lines.length}`);
       
-      // Show the first group immediately
-      showNextYearGroup();
+      // Show the first line immediately
+      showNextLineManual();
     }
     
-    function showNextYearGroup() {
-      if (lineRevealState.currentGroupIndex < lineRevealState.yearGroups.length) {
-        const currentGroup = lineRevealState.yearGroups[lineRevealState.currentGroupIndex];
-        
-        // Add all lines from current year group at once
-        if (lineRevealState.currentGroupIndex > 0) {
+    function showNextLineManual() {
+      if (lineRevealState.currentIndex < lineRevealState.lines.length) {
+        // Add the current line
+        if (lineRevealState.currentIndex > 0) {
           lineRevealState.element.textContent += '\n\n';
         }
+        lineRevealState.element.textContent += lineRevealState.lines[lineRevealState.currentIndex];
         
-        currentGroup.forEach((line, index) => {
-          if (index > 0) {
-            lineRevealState.element.textContent += '\n\n';
-          }
-          lineRevealState.element.textContent += line;
-        });
+        console.log(`Revealed line ${lineRevealState.currentIndex + 1}: "${lineRevealState.lines[lineRevealState.currentIndex]}"`);
+        lineRevealState.currentIndex++;
         
-        console.log(`Revealed year group ${lineRevealState.currentGroupIndex + 1}:`, currentGroup);
-        lineRevealState.currentGroupIndex++;
+        // Always show consistent message
+        navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+        navMsg.style.fontSize = '0.9rem';
+        navMsg.style.visibility = 'visible';
         
-        // Show instruction for next group or completion
-        if (lineRevealState.currentGroupIndex < lineRevealState.yearGroups.length) {
-          navMsg.innerHTML = 'PRESS SPACEBAR OR →<br>FOR NEXT YEAR';
-          navMsg.style.fontSize = '1.8rem';
-          navMsg.style.textAlign = 'center';
-          navMsg.style.visibility = 'visible';
-        } else {
-          // All groups revealed
-          console.log('All year groups revealed, finishing...');
+        if (lineRevealState.currentIndex >= lineRevealState.lines.length) {
+          // All lines revealed
+          console.log('All lines revealed, finishing...');
           isAnimating = false;
           isInLineRevealMode = false;
-          
-          navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
-          navMsg.style.fontSize = '1.8rem';
-          navMsg.style.textAlign = 'center';
-          navMsg.style.visibility = 'visible';
           
           lineRevealState.onComplete && lineRevealState.onComplete();
         }
@@ -1975,7 +1935,7 @@ if ((index*chunkSize)>=len){
         // Reset line reveal mode
         isInLineRevealMode = false;
         
-        pageCounterEl.textContent = `SLIDE ${pageIndex + 1}/${pages.length}`;
+        pageCounterEl.textContent = `SLIDE ${pageIndex + 1} OF ${pages.length}`;
         navMsg.style.visibility = 'hidden';
         
         // Set data-page attribute for CSS targeting
@@ -2198,7 +2158,7 @@ if ((index*chunkSize)>=len){
       
       // Check if we're in line reveal mode first
       if (isInLineRevealMode && (e.code==='Space'||e.code==='ArrowRight')) {
-        showNextYearGroup();
+        showNextLineManual();
         return;
       }
       
