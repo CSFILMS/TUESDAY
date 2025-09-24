@@ -4,54 +4,48 @@
   <meta charset="UTF-8" />
   <title>Terminal Access</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  
-  <!-- Critical resource preloading for faster initial render -->
-  <link rel="preload" href="fonts/fonts/3270-Regular.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" href="script.js?v=6" as="script">
-  
-  <!-- DNS prefetch for external resources -->
-  <link rel="dns-prefetch" href="//fonts.googleapis.com">
-  
-  <!-- Early loading indicator -->
-  <style id="loading-styles">
-    #loading-indicator {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #00FF00;
-      font-family: monospace;
-      font-size: 1.2rem;
-      z-index: 10001;
-      text-shadow: 0 0 10px #00FF00;
-    }
-    
-    #loading-indicator::after {
-      content: '';
-      animation: dots 1.5s infinite;
-    }
-    
-    @keyframes dots {
-      0%, 20% { content: ''; }
-      40% { content: '.'; }
-      60% { content: '..'; }
-      80%, 100% { content: '...'; }
-    }
-  </style>
-  
   <style>
-    /* CRITICAL Font Definition - Loaded immediately */
+    /* Font Definitions */
     @font-face {
       font-family: 'IBM3270';
       src: url('fonts/fonts/3270-Regular.ttf') format('truetype'),
            url('fonts/fonts/3270-Regular.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
+      font-display: swap; /* Better loading performance */
+    }
+    
+    @font-face {
+      font-family: 'PixelCarnageMono';
+      src: url('fonts/fonts/PixelCarnageMono.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
       font-display: swap;
     }
     
-    /* LAZY-LOADED Fonts - Only loaded when requested via JavaScript */
-    /* These will be dynamically added to reduce initial load time */
+    @font-face {
+      font-family: 'Crisp';
+      src: url('fonts/fonts/Crisp.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'ProggyCleanCE';
+      src: url('fonts/fonts/ProggyCleanCE.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    @font-face {
+      font-family: 'ProggySquare';
+      src: url('fonts/fonts/ProggySquare.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
     
     :root { 
       --fg:#D4D4D4; 
@@ -199,8 +193,16 @@
     }
 
     /* HIDE ALL SCROLLBARS */
-    ::-webkit-scrollbar { display: none; width: 0; height: 0; }
-    html, body { scrollbar-width: none; -ms-overflow-style: none; }
+    ::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    
+    html, body {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
     
     /* MOBILE RESPONSIVE FIXES */
     @media screen and (max-width: 768px) {
@@ -283,10 +285,7 @@
   </style>
 </head>
 <body>
-  <!-- Loading indicator shown during initial load -->
-  <div id="loading-indicator">INITIALIZING</div>
-  
-  <div id="main-container" style="display: none;">
+  <div id="main-container">
     <div id="terminal">
       <div id="boot"></div>
       <div class="line" id="prompt"></div>
@@ -298,7 +297,7 @@
   <!-- Custom cursor -->
   <div id="custom-cursor"></div>
 
-  <script src="script.js?v=6" defer></script>
+  <script src="script.js?v=6"></script>
   
   <script>
     // MOBILE-AWARE ZOOM SYSTEM
@@ -359,33 +358,28 @@
       { family: 'ProggySquare', size: '1.4rem' }
     ];
     
-    // Lazy font loading system
-    const lazyFonts = {
-      'PixelCarnageMono': { loaded: false, url: 'fonts/fonts/PixelCarnageMono.ttf' },
-      'Crisp': { loaded: false, url: 'fonts/fonts/Crisp.ttf' },
-      'ProggyCleanCE': { loaded: false, url: 'fonts/fonts/ProggyCleanCE.ttf' },
-      'ProggySquare': { loaded: false, url: 'fonts/fonts/ProggySquare.ttf' }
-    };
-    
-    function loadFont(fontFamily) {
-      if (lazyFonts[fontFamily] && !lazyFonts[fontFamily].loaded) {
-        console.log('Loading font:', fontFamily);
-        const fontFace = new FontFace(fontFamily, `url(${lazyFonts[fontFamily].url})`);
-        
-        fontFace.load().then((loadedFont) => {
-          document.fonts.add(loadedFont);
-          lazyFonts[fontFamily].loaded = true;
-          console.log('Font loaded successfully:', fontFamily);
-        }).catch((error) => {
-          console.error('Failed to load font:', fontFamily, error);
-        });
-      }
-    }
-    
-    // Font loading verification - now only checks loaded fonts
+    // Font loading verification
     function verifyFonts() {
-      const availableFonts = [1]; // IBM3270 is always available (index 1)
-      console.log('Available fonts at startup: IBM3270 (others load on demand)');
+      const testString = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      const testElement = document.createElement('span');
+      testElement.style.position = 'absolute';
+      testElement.style.visibility = 'hidden';
+      testElement.style.fontSize = '72px';
+      testElement.textContent = testString;
+      document.body.appendChild(testElement);
+      
+      const availableFonts = [];
+      fonts.forEach((font, index) => {
+        testElement.style.fontFamily = font.family;
+        const width = testElement.offsetWidth;
+        // If width is significantly different, font loaded successfully
+        if (width > 0) {
+          availableFonts.push(index);
+        }
+      });
+      
+      document.body.removeChild(testElement);
+      console.log('Available fonts:', availableFonts.map(i => fonts[i].family));
       return availableFonts;
     }
     
@@ -408,11 +402,6 @@
       console.log('Applying font:', selectedFont);
       
       try {
-        // Load font if it's not a basic font and not already loaded
-        if (selectedFont.family !== 'monospace' && selectedFont.family !== 'IBM3270') {
-          loadFont(selectedFont.family);
-        }
-        
         // Update the CSS custom property
         document.documentElement.style.setProperty('--font-family', selectedFont.family);
         
@@ -570,8 +559,8 @@
     document.addEventListener('touchmove', preventScroll, { passive: false });
     document.addEventListener('scroll', preventScroll, { passive: false });
     
-    // console.log('Terminal interface initialized'); // Debug disabled
-    // console.log('Controls: +/- font size, 0 reset size, F fullscreen, 1/2/3 colors, Z/X/C glow, B/N font cycle'); // Debug disabled
+    console.log('Terminal interface initialized');
+    console.log('Controls: +/- font size, 0 reset size, F fullscreen, 1/2/3 colors, Z/X/C glow, B/N font cycle');
     
     // Custom cursor functionality - hide on mobile
     const customCursor = document.getElementById('custom-cursor');
@@ -617,27 +606,10 @@
       resizeTimeout = setTimeout(handleResize, 250);
     });
     
-    // Fast initialization function
-    function initializeApp() {
-      // Show main content and hide loading indicator
-      const loadingIndicator = document.getElementById('loading-indicator');
-      const mainContainer = document.getElementById('main-container');
-      const loadingStyles = document.getElementById('loading-styles');
-      
-      if (loadingIndicator) loadingIndicator.style.display = 'none';
-      if (mainContainer) mainContainer.style.display = 'block';
-      if (loadingStyles) loadingStyles.remove(); // Remove loading styles to save memory
-      
-      // Initialize color scheme, font size, and default font
-      applyColors();
-      updateFontSize();
-      applyCurrentFont(); // Set IBM3270 as default font
-      
-      // console.log('🚀 App initialized - loading indicator removed'); // Debug disabled
-    }
-    
-    // Initialize immediately when script runs
-    initializeApp();
+    // Initialize color scheme, font size, and default font
+    applyColors();
+    updateFontSize();
+    applyCurrentFont(); // Set IBM3270 as default font
     
     // Test function - you can call this in console to test font cycling
     window.testFontCycle = function() {
