@@ -376,7 +376,7 @@ z-index: 1;
     
     #page-counter {
       position: fixed;
-      top: calc(2vh + 5vw + 2rem + 55vh);
+      top: calc(2vh + 5vw + 2rem + 58vh + 1.5rem);
       left: 50%;
       transform: translateX(-50%);
       font-size: 0.7rem;
@@ -1385,6 +1385,7 @@ console.warn('Could not load image modes from localStorage:', e);
     let lineRevealTimeouts = []; // Track line reveal timeouts
     let isInLineRevealMode = false;
     let lineRevealState = { lines: [], currentIndex: 0, element: null, onComplete: null };
+    let lastTouchTime = 0; // Track last touch time to prevent double-firing
 
     // Test if a specific photo file exists
     function testPhotoExists(keyword, format) {
@@ -2098,8 +2099,14 @@ if ((index*chunkSize)>=len){
      document.addEventListener('touchstart', (e)=>{ 
        if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
        
+       const now = Date.now();
+       // Debounce touch events to prevent double-firing
+       if (now - lastTouchTime < 200) return;
+       lastTouchTime = now;
+       
        // If in line reveal mode, tapping anywhere advances to next line
        if (isInLineRevealMode) {
+         e.preventDefault(); // Prevent default touch behavior
          showNextLineManual();
          return;
        }
@@ -2110,12 +2117,34 @@ if ((index*chunkSize)>=len){
        } else {
          safeAdvance();
        }
-     }, {passive:true});
+     }, {passive:false}); // Changed to passive:false to allow preventDefault
+     
+     // Add touchend event handler for better mobile responsiveness  
+     document.addEventListener('touchend', (e)=>{ 
+       if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
+       
+       const now = Date.now();
+       // Debounce touch events to prevent double-firing
+       if (now - lastTouchTime < 200) return;
+       lastTouchTime = now;
+       
+       // If in line reveal mode, tapping anywhere advances to next line
+       if (isInLineRevealMode) {
+         e.preventDefault(); // Prevent default touch behavior
+         showNextLineManual();
+         return;
+       }
+     }, {passive:false});
 document.addEventListener('click', (e)=>{ 
       if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
       
+      const now = Date.now();
+      // Prevent click events that follow touch events too closely
+      if (now - lastTouchTime < 300) return;
+      
       // If in line reveal mode, clicking anywhere advances to next line
       if (isInLineRevealMode) {
+        e.preventDefault(); // Prevent any default click behavior
         showNextLineManual();
         return;
       }
