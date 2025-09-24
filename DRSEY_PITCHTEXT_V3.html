@@ -376,8 +376,8 @@ z-index: 1;
     
     #page-counter {
       position: fixed;
-      top: calc(2vh + 5vw + 2rem + 58vh + 1.5rem);
-      left: 50%;
+      top: calc(3vh + 2rem + 60vh - 1rem);
+      left: 42%;
       transform: translateX(-50%);
       font-size: 0.7rem;
       opacity: 1;
@@ -1806,6 +1806,92 @@ if (element.scrollHeight > availableHeight) {
       }
 
     /* ================== SCRAMBLE ================== */
+    
+    // Function to decode subtitle text with scrambling effect
+    function decodeSubtitle(element, baseText, subtitleText, onComplete) {
+      let index = 0;
+      const chunkSize = 8; // Smaller chunks for subtitle
+      const len = subtitleText.length;
+      let scrambled = subtitleText.split('');
+      
+      // Initialize scrambled version (keeping spaces and newlines)
+      for (let i = 0; i < len; i++) {
+        scrambled[i] = /\s/.test(subtitleText[i]) ? subtitleText[i] : chars[Math.floor(Math.random() * chars.length)];
+      }
+      
+      console.log('Starting subtitle decode animation...');
+      
+      const subtitleInterval = setInterval(() => {
+        const display = scrambled.slice();
+        
+        // Reveal chunks progressively
+        for (let i = 0; i < index; i++) {
+          let s = i * chunkSize, e = Math.min(s + chunkSize, len);
+          for (let j = s; j < e; j++) display[j] = subtitleText[j];
+        }
+        
+        // Keep scrambling the unrevealed part
+        for (let k = index * chunkSize; k < len; k++) {
+          display[k] = /\s/.test(subtitleText[k]) ? subtitleText[k] : chars[Math.floor(Math.random() * chars.length)];
+        }
+        
+        // Update element with base text + decoded subtitle
+        element.textContent = baseText + display.join('');
+        
+        // Play synchronized beep for this chunk
+        playDecodingBeeps(index, Math.ceil(len / chunkSize));
+        
+        index++;
+        if ((index * chunkSize) >= len) {
+          clearInterval(subtitleInterval);
+          element.textContent = baseText + subtitleText; // Final clean text
+          console.log('Subtitle decode complete');
+          onComplete && onComplete();
+        }
+      }, 80); // Slightly faster for subtitle
+    }
+    
+    // Function to decode individual timeline lines with scrambling effect
+    function decodeTimelineLine(element, baseContent, lineText, onComplete) {
+      let index = 0;
+      const chunkSize = 6; // Small chunks for line-by-line
+      const len = lineText.length;
+      let scrambled = lineText.split('');
+      
+      // Initialize scrambled version (keeping spaces and punctuation)
+      for (let i = 0; i < len; i++) {
+        scrambled[i] = /\s|[:\.\-\[\]#]/.test(lineText[i]) ? lineText[i] : chars[Math.floor(Math.random() * chars.length)];
+      }
+      
+      const lineInterval = setInterval(() => {
+        const display = scrambled.slice();
+        
+        // Reveal chunks progressively
+        for (let i = 0; i < index; i++) {
+          let s = i * chunkSize, e = Math.min(s + chunkSize, len);
+          for (let j = s; j < e; j++) display[j] = lineText[j];
+        }
+        
+        // Keep scrambling the unrevealed part
+        for (let k = index * chunkSize; k < len; k++) {
+          display[k] = /\s|[:\.\-\[\]#]/.test(lineText[k]) ? lineText[k] : chars[Math.floor(Math.random() * chars.length)];
+        }
+        
+        // Update element with base content + decoded line
+        element.textContent = baseContent + display.join('');
+        
+        // Play synchronized beep for this chunk
+        playDecodingBeeps(index, Math.ceil(len / chunkSize));
+        
+        index++;
+        if ((index * chunkSize) >= len) {
+          clearInterval(lineInterval);
+          element.textContent = baseContent + lineText; // Final clean text
+          onComplete && onComplete();
+        }
+      }, 60); // Fast decode for individual lines
+    }
+    
     function scrambleFastChunks(element, text, onComplete) {
       if (currentInterval) {
 clearInterval(currentInterval);
@@ -1856,15 +1942,21 @@ if ((index*chunkSize)>=len){
     const filmByText = text.split('\n\n6BDM:')[0];
     element.textContent = filmByText;
     
-    // After 4 seconds, add the subtitle
+    // After 4 seconds, decode the subtitle
     setTimeout(() => {
-      element.textContent = text; // Show full text including 6BDM
-      console.log('Added 6BDM subtitle after 4 second delay');
+      console.log('Starting 6BDM subtitle decode after 4 second delay');
       
-      // Continue to next slide after showing subtitle
-      setTimeout(() => {
-        onComplete && onComplete();
-      }, 1000); // Brief pause before continuing
+      // Extract the 6BDM part
+      const subtitleText = '\n\n6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH';
+      const baseText = filmByText;
+      
+      // Decode the subtitle with scrambling effect
+      decodeSubtitle(element, baseText, subtitleText, () => {
+        // Continue to next slide after subtitle decode completes
+        setTimeout(() => {
+          onComplete && onComplete();
+        }, 1000); // Brief pause before continuing
+      });
     }, 4000); // 4 second delay for subtitle
   } else if (text.includes('A FILM BY EUGENE JARECKI')) {
     console.log('A FILM BY detected - adding 5 second delay before continuing...');
@@ -1914,27 +2006,60 @@ if ((index*chunkSize)>=len){
     
     function showNextLineManual() {
       if (lineRevealState.currentIndex < lineRevealState.lines.length) {
-        // Add the current line
-        if (lineRevealState.currentIndex > 0) {
-          lineRevealState.element.textContent += '\n\n';
-        }
-        lineRevealState.element.textContent += lineRevealState.lines[lineRevealState.currentIndex];
+        const currentLine = lineRevealState.lines[lineRevealState.currentIndex];
+        const lineNumber = lineRevealState.currentIndex + 1;
         
-        console.log(`Revealed line ${lineRevealState.currentIndex + 1}: "${lineRevealState.lines[lineRevealState.currentIndex]}"`);
-        lineRevealState.currentIndex++;
+        // Determine if this line should be decoded (first 2 lines only - 2006 content)
+        const shouldDecode = lineRevealState.currentIndex < 2;
         
-        // Always show consistent message
-        navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
-        navMsg.style.fontSize = '0.9rem';
-        navMsg.style.visibility = 'visible';
-        
-        if (lineRevealState.currentIndex >= lineRevealState.lines.length) {
-          // All lines revealed
-          console.log('All lines revealed, finishing...');
-          isAnimating = false;
-          isInLineRevealMode = false;
+        if (shouldDecode) {
+          console.log(`Decoding line ${lineNumber}: "${currentLine}"`);
           
-          lineRevealState.onComplete && lineRevealState.onComplete();
+          // Get current content before this line
+          let previousContent = '';
+          if (lineRevealState.currentIndex > 0) {
+            previousContent = lineRevealState.element.textContent + '\n\n';
+          }
+          
+          // Decode this line with scrambling effect
+          decodeTimelineLine(lineRevealState.element, previousContent, currentLine, () => {
+            lineRevealState.currentIndex++;
+            
+            // Check if we're done
+            if (lineRevealState.currentIndex >= lineRevealState.lines.length) {
+              console.log('All lines revealed, finishing...');
+              isAnimating = false;
+              isInLineRevealMode = false;
+              lineRevealState.onComplete && lineRevealState.onComplete();
+            } else {
+              // Show navigation message for manual progression (even after decoded lines)
+              navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+              navMsg.style.fontSize = '0.9rem';
+              navMsg.style.visibility = 'visible';
+            }
+          });
+        } else {
+          // Show instantly for later lines (no decoding)
+          if (lineRevealState.currentIndex > 0) {
+            lineRevealState.element.textContent += '\n\n';
+          }
+          lineRevealState.element.textContent += currentLine;
+          
+          console.log(`Instantly revealed line ${lineNumber}: "${currentLine}"`);
+          lineRevealState.currentIndex++;
+          
+          // Show navigation message for manual progression
+          navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+          navMsg.style.fontSize = '0.9rem';
+          navMsg.style.visibility = 'visible';
+          
+          if (lineRevealState.currentIndex >= lineRevealState.lines.length) {
+            // All lines revealed
+            console.log('All lines revealed, finishing...');
+            isAnimating = false;
+            isInLineRevealMode = false;
+            lineRevealState.onComplete && lineRevealState.onComplete();
+          }
         }
       }
     }
