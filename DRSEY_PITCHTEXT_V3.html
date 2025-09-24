@@ -377,7 +377,7 @@ z-index: 1;
     #page-counter {
       position: fixed;
       top: calc(3vh + 2rem + 60vh - 1rem);
-      left: 42%;
+      left: 50%;
       transform: translateX(-50%);
       font-size: 0.7rem;
       opacity: 1;
@@ -1807,48 +1807,31 @@ if (element.scrollHeight > availableHeight) {
 
     /* ================== SCRAMBLE ================== */
     
-    // Function to decode subtitle text with scrambling effect
+    // Function to type subtitle text character by character (typewriter effect)
     function decodeSubtitle(element, baseText, subtitleText, onComplete) {
-      let index = 0;
-      const chunkSize = 8; // Smaller chunks for subtitle
+      let charIndex = 0;
       const len = subtitleText.length;
-      let scrambled = subtitleText.split('');
       
-      // Initialize scrambled version (keeping spaces and newlines)
-      for (let i = 0; i < len; i++) {
-        scrambled[i] = /\s/.test(subtitleText[i]) ? subtitleText[i] : chars[Math.floor(Math.random() * chars.length)];
-      }
+      console.log('Starting subtitle typewriter animation...');
       
-      console.log('Starting subtitle decode animation...');
-      
-      const subtitleInterval = setInterval(() => {
-        const display = scrambled.slice();
+      const typewriterInterval = setInterval(() => {
+        // Show characters up to current index
+        const currentText = subtitleText.substring(0, charIndex + 1);
+        element.textContent = baseText + currentText;
         
-        // Reveal chunks progressively
-        for (let i = 0; i < index; i++) {
-          let s = i * chunkSize, e = Math.min(s + chunkSize, len);
-          for (let j = s; j < e; j++) display[j] = subtitleText[j];
+        // Play a subtle beep for typing (less frequent than decode beeps)
+        if (charIndex % 3 === 0) { // Every 3rd character
+          playBeep(1000, 0.02, 0.08); // Higher pitch, shorter duration, quieter
         }
         
-        // Keep scrambling the unrevealed part
-        for (let k = index * chunkSize; k < len; k++) {
-          display[k] = /\s/.test(subtitleText[k]) ? subtitleText[k] : chars[Math.floor(Math.random() * chars.length)];
-        }
-        
-        // Update element with base text + decoded subtitle
-        element.textContent = baseText + display.join('');
-        
-        // Play synchronized beep for this chunk
-        playDecodingBeeps(index, Math.ceil(len / chunkSize));
-        
-        index++;
-        if ((index * chunkSize) >= len) {
-          clearInterval(subtitleInterval);
+        charIndex++;
+        if (charIndex >= len) {
+          clearInterval(typewriterInterval);
           element.textContent = baseText + subtitleText; // Final clean text
-          console.log('Subtitle decode complete');
+          console.log('Subtitle typewriter complete');
           onComplete && onComplete();
         }
-      }, 80); // Slightly faster for subtitle
+      }, 50); // 50ms per character for smooth typewriter effect
     }
     
     // Function to decode individual timeline lines with scrambling effect
