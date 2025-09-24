@@ -1967,7 +1967,7 @@ if ((index*chunkSize)>=len){
         // Reset line reveal mode
         isInLineRevealMode = false;
         
-        pageCounterEl.textContent = `SLIDE ${pageIndex + 1} OF ${pages.length}`;
+        pageCounterEl.textContent = `SLIDE ${pageIndex + 1}/${pages.length}`;
         navMsg.style.visibility = 'hidden';
         
         // Set data-page attribute for CSS targeting
