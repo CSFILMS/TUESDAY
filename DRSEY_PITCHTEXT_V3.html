@@ -1380,6 +1380,7 @@ console.warn('Could not load image modes from localStorage:', e);
     let currentInterval = null;
     let availableKeywords = new Set(); // Store available photo keywords
     let audioTimeout = null; // Track audio timeout
+    let lineRevealTimeouts = []; // Track line reveal timeouts
 
     // Test if a specific photo file exists
     function testPhotoExists(keyword, format) {
@@ -1858,10 +1859,15 @@ if ((index*chunkSize)>=len){
 
     /* ================== LINE BY LINE REVEAL ================== */
     function revealLineByLine(element, text, onComplete) {
+      // Clear any existing intervals and timeouts
       if (currentInterval) {
         clearInterval(currentInterval);
         currentInterval = null;
       }
+      
+      // Clear any existing line reveal timeouts
+      lineRevealTimeouts.forEach(timeout => clearTimeout(timeout));
+      lineRevealTimeouts = [];
       
       isAnimating = true;
       promptElem.style.visibility = 'hidden';
@@ -1884,8 +1890,9 @@ if ((index*chunkSize)>=len){
           console.log(`Revealed line ${currentLineIndex + 1}: "${lines[currentLineIndex]}"`);
           currentLineIndex++;
           
-          // Schedule next line after 3 seconds
-          setTimeout(showNextLine, 3000);
+          // Schedule next line after 3 seconds and track the timeout
+          const timeoutId = setTimeout(showNextLine, 3000);
+          lineRevealTimeouts.push(timeoutId);
         } else {
           // All lines revealed
           console.log('All lines revealed, finishing...');
@@ -1909,6 +1916,10 @@ if ((index*chunkSize)>=len){
         if (pageIndex >= pages.length) pageIndex = 0;
         if (pageIndex < 0) pageIndex = pages.length - 1;
         currentPage = pageIndex;
+        
+        // Clear any ongoing line reveal timeouts when changing pages
+        lineRevealTimeouts.forEach(timeout => clearTimeout(timeout));
+        lineRevealTimeouts = [];
         
         pageCounterEl.textContent = `SLIDE ${pageIndex + 1} OF ${pages.length}`;
         navMsg.style.visibility = 'hidden';
