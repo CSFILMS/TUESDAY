@@ -7,8 +7,9 @@
   <style>
     /* Font Definitions */
     @font-face {
-      font-family: 'Crisp';
-      src: url('fonts/fonts/Crisp.ttf') format('truetype');
+      font-family: 'IBM3270';
+      src: url('fonts/fonts/3270-Regular.ttf') format('truetype'),
+           url('fonts/fonts/3270-Regular.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
       font-display: swap; /* Better loading performance */
@@ -51,7 +52,7 @@
       --bg:#000; 
       --accent:#00FF00; 
       --soft:#66FF66;
-      --font-family: 'Crisp', monospace;
+      --font-family: 'IBM3270', monospace;
     }
     html, body { height:100%; }
     
@@ -346,7 +347,7 @@
     }
     
     // Font cycling functionality - UPDATED WITH 6 FONTS - IBM3270 DEFAULT
-    let currentFontIndex = 3; // Start with Crisp as default
+    let currentFontIndex = 1; // Start with IBM3270 as default
     let currentFontSize = 1.0; // Size multiplier (1.0 = 100% of original size)
     const fonts = [
       { family: 'monospace', size: '1.4rem' },
