@@ -581,6 +581,7 @@ A FILM BY EUGENE JARECKI
 
 JA BUILDS WIKILEAKS [WL], A SECURE PUBLISHING PLATFORM TO HELP WHISTLEBLOWERS BYPASS LEGACY MEDIA.
 
+
 2010: WL RELEASES A CLASSIFIED INTERNAL U.S. MILITARY VIDEO, EXPOSING U.S. WAR CRIMES COMMITTED IN IRAQ. 
 
 {COLLATERAL MURDER VIDEO}
@@ -595,8 +596,10 @@ UK AUTHORITIES CARRY OUT INTERPOL ARREST WARRANT.
 
 JA TAKES REFUGE IN ECUADORIAN EMBASSY, LONDON.
 
+
 2010-2017 WL KEEPS PUBLISHING TILL JA FORCIBLY REMOVED.
 2017-2024 JA IS  INMATE #A9379AY AT HMP BELMARSH, MAX. SEC. 
+
 
 2024: US. DROPS 17/18 COUNTS AGAINST JA, DISMISSES CASE. 
 JA RETURNED TO AUSTRALIA. 
@@ -1853,6 +1856,54 @@ if ((index*chunkSize)>=len){
       },100);
     }
 
+    /* ================== LINE BY LINE REVEAL ================== */
+    function revealLineByLine(element, text, onComplete) {
+      if (currentInterval) {
+        clearInterval(currentInterval);
+        currentInterval = null;
+      }
+      
+      isAnimating = true;
+      promptElem.style.visibility = 'hidden';
+      navMsg.style.visibility = 'hidden';
+      
+      const lines = text.split('\n').filter(line => line.trim() !== ''); // Remove empty lines
+      let currentLineIndex = 0;
+      element.textContent = '';
+      
+      console.log('Starting line-by-line reveal for 2006-2024 content...');
+      
+      function showNextLine() {
+        if (currentLineIndex < lines.length) {
+          // Add the current line
+          if (currentLineIndex > 0) {
+            element.textContent += '\n\n';
+          }
+          element.textContent += lines[currentLineIndex];
+          
+          console.log(`Revealed line ${currentLineIndex + 1}: "${lines[currentLineIndex]}"`);
+          currentLineIndex++;
+          
+          // Schedule next line after 3 seconds
+          setTimeout(showNextLine, 3000);
+        } else {
+          // All lines revealed
+          console.log('All lines revealed, finishing...');
+          isAnimating = false;
+          
+          if (currentPage < 2) {
+            navMsg.textContent = 'PRESS SPACEBAR TO CONTINUE';
+            navMsg.style.visibility = 'visible';
+          }
+          
+          onComplete && onComplete();
+        }
+      }
+      
+      // Start revealing lines
+      showNextLine();
+    }
+
          /* ================== PAGE RENDER ================== */
   function startPage(pageIndex){
         if (pageIndex >= pages.length) pageIndex = 0;
@@ -1887,18 +1938,15 @@ if ((index*chunkSize)>=len){
          // Check if this is the Collateral Murder video slide
          const isCollateralMurderSlide = pages[pageIndex].includes('It published the infamous Collateral Murder video in 2010');
          
-         // Check if this page contains 2006 or 2024 content that should stay scrambled
-         const shouldNotDecode = pages[pageIndex].includes('2006:') || pages[pageIndex].includes('2024:');
+         // Check if this page contains 2006-2024 timeline content that should use line-by-line reveal
+         const isTimelineContent = pages[pageIndex].includes('2006:') || pages[pageIndex].includes('2024:');
          
-         if (shouldNotDecode) {
-           // Show plain text immediately for 2006 and 2024 sections - no decoding animation
-           el.textContent = pages[pageIndex];
-           
-           // Show nav message immediately since no animation
-           if (currentPage < 2) {
-             navMsg.textContent='PRESS SPACEBAR TO CONTINUE';
-             navMsg.style.visibility='visible';
-           }
+         if (isTimelineContent) {
+           // Use line-by-line reveal for 2006-2024 timeline content
+           revealLineByLine(el, pages[pageIndex], () => {
+             // Timeline reveal complete
+             console.log('Timeline reveal completed');
+           });
          } else {
            scrambleFastChunks(el, pages[pageIndex], () => {
            // Text displayed
