@@ -2078,36 +2078,54 @@ if ((index*chunkSize)>=len){
     document.getElementById('nav-prev').addEventListener('click', goBack);
     document.getElementById('nav-next').addEventListener('click', safeAdvance);
  document.addEventListener('pointerdown', (e)=>{ 
-       if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
-       
-       // Left half of screen goes back, right half goes forward
-       if (e.clientX < window.innerWidth / 2) {
- goBack();
-       } else {
- safeAdvance();
-       }
-     }, {passive:true});
+      if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
+      
+      // If in line reveal mode, clicking anywhere advances to next line
+      if (isInLineRevealMode) {
+        showNextLineManual();
+        return;
+      }
+      
+      // Normal mode: Left half of screen goes back, right half goes forward
+      if (e.clientX < window.innerWidth / 2) {
+        goBack();
+      } else {
+        safeAdvance();
+      }
+    }, {passive:true});
      
      document.addEventListener('touchstart', (e)=>{ 
        if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
        
-       // Left half of screen goes back, right half goes forward
+       // If in line reveal mode, tapping anywhere advances to next line
+       if (isInLineRevealMode) {
+         showNextLineManual();
+         return;
+       }
+       
+       // Normal mode: Left half of screen goes back, right half goes forward
        if (e.touches[0].clientX < window.innerWidth / 2) {
- goBack();
+         goBack();
        } else {
- safeAdvance();
+         safeAdvance();
        }
      }, {passive:true});
- document.addEventListener('click', (e)=>{ 
-       if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
-       
-       // Left half of screen goes back, right half goes forward
-       if (e.clientX < window.innerWidth / 2) {
- goBack();
-       } else {
- safeAdvance();
-       }
-     });
+document.addEventListener('click', (e)=>{ 
+      if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
+      
+      // If in line reveal mode, clicking anywhere advances to next line
+      if (isInLineRevealMode) {
+        showNextLineManual();
+        return;
+      }
+      
+      // Normal mode: Left half of screen goes back, right half goes forward
+      if (e.clientX < window.innerWidth / 2) {
+        goBack();
+      } else {
+        safeAdvance();
+      }
+    });
 
     // Simplified font system
     let currentFontIndex = 1; // Start with IBM3270 (index 1) as default
