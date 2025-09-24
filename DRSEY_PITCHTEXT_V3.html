@@ -570,8 +570,6 @@ PRESS [F] FOR FULL SCREEN
 A FILM BY EUGENE JARECKI
 
 
-
-
 6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH
 
 
@@ -1282,9 +1280,9 @@ console.warn('Could not load image modes from localStorage:', e);
     // Load saved image modes from localStorage
     loadPageModesFromStorage();
     
-    // Initialize keyword scanning
+    // Initialize keyword scanning in background (non-blocking)
     scanAvailableKeywords().then(() => {
-      console.log('Keyword scanning complete, starting presentation...');
+      console.log('Keyword scanning complete (background)');
       
       // Direct test of photo_ignorant.webp
       console.log('🔍 Direct test: Creating photo_ignorant.webp image...');
@@ -1298,8 +1296,8 @@ console.warn('Could not load image modes from localStorage:', e);
       testImg.onerror = () => {
         console.log('❌ Direct test: photo_ignorant.webp failed to load');
       };
-      
-      startPage(0);
+    }).catch(err => {
+      console.log('Keyword scanning failed, but presentation continues:', err);
     });
     
     // Debug function - call from browser console: testImage('ignorant')
@@ -1850,8 +1848,25 @@ if ((index*chunkSize)>=len){
   navMsg.style.visibility='visible';
   }
   
-  // Check if this text contains "A FILM BY" and add 5-second delay before calling onComplete
-  if (text.includes('A FILM BY EUGENE JARECKI')) {
+  // Check if this text contains "A FILM BY" and add delayed subtitle
+  if (text.includes('A FILM BY EUGENE JARECKI') && text.includes('6BDM: JULIAN ASSANGE')) {
+    console.log('A FILM BY + 6BDM detected - showing delayed subtitle...');
+    
+    // First show only "A FILM BY EUGENE JARECKI"
+    const filmByText = text.split('\n\n6BDM:')[0];
+    element.textContent = filmByText;
+    
+    // After 4 seconds, add the subtitle
+    setTimeout(() => {
+      element.textContent = text; // Show full text including 6BDM
+      console.log('Added 6BDM subtitle after 4 second delay');
+      
+      // Continue to next slide after showing subtitle
+      setTimeout(() => {
+        onComplete && onComplete();
+      }, 1000); // Brief pause before continuing
+    }, 4000); // 4 second delay for subtitle
+  } else if (text.includes('A FILM BY EUGENE JARECKI')) {
     console.log('A FILM BY detected - adding 5 second delay before continuing...');
     setTimeout(() => {
       onComplete && onComplete();
@@ -1937,7 +1952,7 @@ if ((index*chunkSize)>=len){
         // Reset line reveal mode
         isInLineRevealMode = false;
         
-        pageCounterEl.textContent = `SLIDE ${pageIndex + 1} OF ${pages.length}`;
+        pageCounterEl.textContent = `SLIDE ${pageIndex + 1} / ${pages.length}`;
         navMsg.style.visibility = 'hidden';
         
         // Set data-page attribute for CSS targeting
@@ -2317,6 +2332,9 @@ if (e.key==='1'||e.key==='2'||e.key==='3'){ colorIndex=parseInt(e.key,10)-1; app
 
     /* ================== INIT ================== */
     window.onload = () => {
+      // Start presentation immediately when DOM is loaded
+      startPage(0);
+      
       // Mute all audio by default
       document.addEventListener('keydown', (e) => {
         e.preventDefault();
@@ -2508,6 +2526,4 @@ if (mode === 'full') {
   
 </body>
 </html>
-U p d a t e   t i m e s t a m p :   0 9 / 2 3 / 2 0 2 5   2 2 : 5 8 : 1 8 
- 
- 
+  
