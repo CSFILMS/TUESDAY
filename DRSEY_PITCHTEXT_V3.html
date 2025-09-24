@@ -916,7 +916,9 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       // Restore UI after test
       setTimeout(() => {
         if (navMsg) {
-          navMsg.textContent = 'PRESS SPACEBAR TO CONTINUE';
+          navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+          navMsg.style.fontSize = '1.8rem';
+          navMsg.style.textAlign = 'center';
           navMsg.style.color = '';
         }
       }, 1000);
@@ -1842,7 +1844,9 @@ if ((index*chunkSize)>=len){
   
   // Only show "PRESS SPACEBAR TO CONTINUE" for first 2 pages
   if (currentPage < 2) {
-  navMsg.textContent='PRESS SPACEBAR TO CONTINUE';
+  navMsg.innerHTML='PRESS SPACEBAR<br>TO CONTINUE';
+  navMsg.style.fontSize = '1.8rem'; // Make it bigger
+  navMsg.style.textAlign = 'center';
   navMsg.style.visibility='visible';
   }
   
@@ -1938,7 +1942,9 @@ if ((index*chunkSize)>=len){
         
         // Show instruction for next group or completion
         if (lineRevealState.currentGroupIndex < lineRevealState.yearGroups.length) {
-          navMsg.textContent = 'PRESS SPACEBAR OR → FOR NEXT YEAR';
+          navMsg.innerHTML = 'PRESS SPACEBAR OR →<br>FOR NEXT YEAR';
+          navMsg.style.fontSize = '1.8rem';
+          navMsg.style.textAlign = 'center';
           navMsg.style.visibility = 'visible';
         } else {
           // All groups revealed
@@ -1946,7 +1952,9 @@ if ((index*chunkSize)>=len){
           isAnimating = false;
           isInLineRevealMode = false;
           
-          navMsg.textContent = 'PRESS SPACEBAR TO CONTINUE';
+          navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+          navMsg.style.fontSize = '1.8rem';
+          navMsg.style.textAlign = 'center';
           navMsg.style.visibility = 'visible';
           
           lineRevealState.onComplete && lineRevealState.onComplete();

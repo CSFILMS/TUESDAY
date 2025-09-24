@@ -284,7 +284,7 @@
 </head>
 <body>
   <!-- Loading indicator shown during initial load -->
-  <div id="loading-indicator">LOADING TERMINAL</div>
+  <div id="loading-indicator">INITIALIZING</div>
   
   <div id="main-container" style="display: none;">
     <div id="terminal">
@@ -570,8 +570,8 @@
     document.addEventListener('touchmove', preventScroll, { passive: false });
     document.addEventListener('scroll', preventScroll, { passive: false });
     
-    console.log('Terminal interface initialized');
-    console.log('Controls: +/- font size, 0 reset size, F fullscreen, 1/2/3 colors, Z/X/C glow, B/N font cycle');
+    // console.log('Terminal interface initialized'); // Debug disabled
+    // console.log('Controls: +/- font size, 0 reset size, F fullscreen, 1/2/3 colors, Z/X/C glow, B/N font cycle'); // Debug disabled
     
     // Custom cursor functionality - hide on mobile
     const customCursor = document.getElementById('custom-cursor');
@@ -633,7 +633,7 @@
       updateFontSize();
       applyCurrentFont(); // Set IBM3270 as default font
       
-      console.log('🚀 App initialized - loading indicator removed');
+      // console.log('🚀 App initialized - loading indicator removed'); // Debug disabled
     }
     
     // Initialize immediately when script runs
