@@ -8,18 +8,112 @@
     /* Background video */
     .bg-video {
       position: fixed;
-      top: calc(2vh + 5vw - 1rem);
-      left: calc(50% + 1vw);
-      transform: translateX(-50%) perspective(1000px) rotateX(5deg) rotateY(-35deg);
-      width: calc(45vw - 4rem);
-      height: calc(55vh - 4rem);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(30vw - 2rem);
+      height: calc(36vh - 2rem);
       object-fit: cover;
-      object-position: top center;
+      object-position: center center;
       z-index: -1;
       pointer-events: none;
       display: none;
       filter: grayscale(1) brightness(0.64) contrast(1.2) sepia(1) hue-rotate(60deg) saturate(2);
+      animation: videoFlicker 0.05s infinite, hologramRoll 3s linear infinite, hologramGlitch 0.8s infinite;
+      overflow: hidden;
     }
+    
+    /* Add hologram container for better effect control */
+    .bg-video::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        0deg,
+        transparent 0%,
+        rgba(0, 255, 0, 0.1) 25%,
+        rgba(0, 255, 0, 0.2) 50%,
+        rgba(0, 255, 0, 0.1) 75%,
+        transparent 100%
+      );
+      animation: verticalRoll 2s linear infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    /* Video flicker animation */
+    @keyframes videoFlicker {
+      0% { filter: grayscale(1) brightness(0.64) contrast(1.2) sepia(1) hue-rotate(60deg) saturate(2); }
+      10% { filter: grayscale(1) brightness(0.58) contrast(1.22) sepia(1) hue-rotate(60deg) saturate(2); }
+      20% { filter: grayscale(1) brightness(0.68) contrast(1.18) sepia(1) hue-rotate(60deg) saturate(2); }
+      30% { filter: grayscale(1) brightness(0.61) contrast(1.24) sepia(1) hue-rotate(60deg) saturate(2); }
+      40% { filter: grayscale(1) brightness(0.66) contrast(1.19) sepia(1) hue-rotate(60deg) saturate(2); }
+      50% { filter: grayscale(1) brightness(0.59) contrast(1.23) sepia(1) hue-rotate(60deg) saturate(2); }
+      60% { filter: grayscale(1) brightness(0.69) contrast(1.17) sepia(1) hue-rotate(60deg) saturate(2); }
+      70% { filter: grayscale(1) brightness(0.57) contrast(1.25) sepia(1) hue-rotate(60deg) saturate(2); }
+      80% { filter: grayscale(1) brightness(0.65) contrast(1.21) sepia(1) hue-rotate(60deg) saturate(2); }
+      90% { filter: grayscale(1) brightness(0.62) contrast(1.22) sepia(1) hue-rotate(60deg) saturate(2); }
+      100% { filter: grayscale(1) brightness(0.64) contrast(1.2) sepia(1) hue-rotate(60deg) saturate(2); }
+    }
+    
+    /* Vertical roll displacement effect */
+    @keyframes verticalRoll {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+    
+    /* Hologram rolling wave effect */
+    @keyframes hologramRoll {
+      0% { 
+        transform: translate(-50%, -50%) scaleY(1);
+        filter: grayscale(1) brightness(0.64) contrast(1.2) sepia(1) hue-rotate(60deg) saturate(2);
+      }
+      25% { 
+        transform: translate(-50%, -50%) scaleY(1.02);
+        filter: grayscale(1) brightness(0.68) contrast(1.15) sepia(1) hue-rotate(62deg) saturate(2.1);
+      }
+      50% { 
+        transform: translate(-50%, -50%) scaleY(0.98);
+        filter: grayscale(1) brightness(0.6) contrast(1.25) sepia(1) hue-rotate(58deg) saturate(1.9);
+      }
+      75% { 
+        transform: translate(-50%, -50%) scaleY(1.01);
+        filter: grayscale(1) brightness(0.66) contrast(1.18) sepia(1) hue-rotate(61deg) saturate(2.05);
+      }
+      100% { 
+        transform: translate(-50%, -50%) scaleY(1);
+        filter: grayscale(1) brightness(0.64) contrast(1.2) sepia(1) hue-rotate(60deg) saturate(2);
+      }
+    }
+    
+    /* Hologram glitch effect */
+    @keyframes hologramGlitch {
+      0%, 90%, 100% { 
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+      92% { 
+        transform: translate(-49%, -50%);
+        opacity: 0.8;
+      }
+      94% { 
+        transform: translate(-51%, -49%);
+        opacity: 0.9;
+      }
+      96% { 
+        transform: translate(-50%, -51%);
+        opacity: 0.7;
+      }
+      98% { 
+        transform: translate(-49%, -50%);
+        opacity: 0.95;
+      }
+    }
+    
+    
     /* Video overlay (disabled for small centered video) */
     .bg-overlay {
       display: none;
@@ -148,20 +242,21 @@ transparent 4px
     
     @media (max-width: 768px) {
       body {
-padding: 4vw;
-margin: 3vh auto;
-font-size: 0.8rem;
+        padding: 0;
+        margin: 0;
+        font-size: 0.8rem;
+        padding-left: 0;
       }
       #page {
-padding: 2vw;
+        padding: 1vh 2vw;
       }
             #unscramble {
         font-size: 0.8rem;
         line-height: 1.3;
       }
       #nav {
-font-size: 0.9rem;
-margin: 2vh 0 1vh;
+        font-size: 0.9rem;
+        margin: 0.3vh 0 0.3vh;
       }
       #nav-msg {
 font-size: 0.6rem;
@@ -171,9 +266,9 @@ font-size: 0.6rem;
 flex-direction: column;
 gap: 0.5rem;
       }
-      #page-counter {
-bottom: 1vh;
-right: 2vw;
+      #slide-counter {
+        font-size: 0.5rem;
+        margin: 0.3vh 0;
       }
       #prompt {
         font-size: 0.7rem;
@@ -338,7 +433,7 @@ z-index: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 3vh 0 1vh; 
+      margin: 1vh 0 0.5vh; 
       font-size: 0.9rem;
       min-height: 5vh;
       position: relative;
@@ -374,12 +469,12 @@ z-index: 1;
       display: none;
     }
     
-    #page-counter {
-      position: fixed;
-      top: calc(3vh + 2rem + 60vh - 1rem);
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.7rem;
+    #slide-counter {
+      position: relative;
+      top: 0.5vh;
+      left: 0;
+      transform: none;
+      font-size: 0.6rem;
       opacity: 1;
       color: var(--accent);
       text-shadow: 0 0 2px var(--accent), 0 0 12px var(--accent);
@@ -388,6 +483,8 @@ z-index: 1;
       z-index: 1000;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      text-align: center;
+      margin: 0.5vh 0;
     }
     
    /* Side mode: text on left, image on right */
@@ -406,7 +503,7 @@ z-index: 2 !important;
  z-index: 2 !important;
        }
     
-  #text-wrap.side-mode #unscramble {
+    #text-wrap.side-mode #unscramble {
       width: 100% !important;
       max-width: 100% !important;
       overflow: hidden !important;
@@ -428,6 +525,17 @@ z-index: 2 !important;
       text-indent: 0 !important;
       font-size: 1.0rem !important;
       line-height: 1.3 !important;
+    }
+    
+    /* Prevent any formatting interference with timeline content */
+    #unscramble[data-timeline="true"] {
+      white-space: pre-wrap !important;
+      word-wrap: normal !important;
+      overflow-wrap: normal !important;
+      hyphens: none !important;
+      text-indent: 0 !important;
+      word-break: normal !important;
+      line-height: 1.5 !important;
     }
     
     /* Collateral Murder video slide animation */
@@ -515,6 +623,32 @@ z-index: 2 !important;
     <source src="VIDEOS/video2.mp4" type="video/mp4" />
   </video>
 
+  <video
+    id="bg-video3"
+    class="bg-video"
+    autoplay
+    muted
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+    tabindex="-1"
+    disablepictureinpicture
+    controlslist="nodownload noplaybackrate noptimizequality nodatachannel"
+    volume="0"
+    defaultMuted
+    style="display: none;"
+  >
+    <source src="JA_OBIWAN.mp4" type="video/mp4" />
+  </video>
+  
+  <audio
+    id="obiwan-audio"
+    preload="metadata"
+    style="display: none;"
+  >
+    <source src="JA_OBIWAN.mp4" type="audio/mp4" />
+  </audio>
+
   <div class="bg-overlay" id="bg-overlay" style="display: none;"></div>
 
   <div id="page">
@@ -532,11 +666,12 @@ z-index: 2 !important;
     <span id="nav-next">&gt;</span>
   </div>
 
+  <div id="slide-counter">SLIDE 1 / 1</div>
+
   <div id="hud">
  <span class="controls">[1/2/3] color • [↑/↓] image mode • [L] below • [S] side • [A] small side • [O] off • [Z/X/C] overlay • [M] sound • [T] test • [Q/W] sound type</span>
   </div>
 
-  <div id="page-counter">Page <span id="current-page">1</span></div>
   
   <!-- Custom cursor -->
   <div id="custom-cursor"></div>
@@ -576,32 +711,20 @@ A FILM BY EUGENE JARECKI
 
 
 
-2006: JULIAN ASSANGE [JA] IS ALIGNED WITH CRYPTO AND CYPHERPUNK AGITATORS IN THE FIGHT FOR DECENTRALIZATION, PRIVACY, AND FREEDOM OF INFORMATION.
-
-JA BUILDS WIKILEAKS [WL], A SECURE PUBLISHING PLATFORM TO HELP WHISTLEBLOWERS BYPASS LEGACY MEDIA.
-
-
-2010: WL RELEASES A CLASSIFIED INTERNAL U.S. MILITARY VIDEO, EXPOSING U.S. WAR CRIMES COMMITTED IN IRAQ. 
-
-{COLLATERAL MURDER VIDEO}
-
-
-
-
-
-2011-2012: WL PUBLISHES 6 OF THE 10 LARGEST RELEASES OF SENSITIVE MATERIAL IN U.S. HISTORY. 
-
-UK AUTHORITIES CARRY OUT INTERPOL ARREST WARRANT. 
-
-JA TAKES REFUGE IN ECUADORIAN EMBASSY, LONDON.
-
-
-2010-2017 WL KEEPS PUBLISHING TILL JA FORCIBLY REMOVED.
-2017-2024 JA IS  INMATE #A9379AY AT HMP BELMARSH, MAX. SEC. 
-
-
-2024: US. DROPS 17/18 COUNTS AGAINST JA, DISMISSES CASE. 
-JA RETURNED TO AUSTRALIA. 
+2006: 
+  > JULIAN ASSANGE [JA] IS ALIGNED WITH CRYPTO AND CYPHERPUNK AGITATORS IN THE FIGHT FOR DECENTRALIZATION, PRIVACY, AND FREEDOM OF INFORMATION.
+  > JA BUILDS WIKILEAKS [WL], A SECURE PUBLISHING PLATFORM TO HELP WHISTLEBLOWERS BYPASS LEGACY MEDIA.
+2010: 
+  > WL RELEASES A CLASSIFIED INTERNAL U.S. MILITARY VIDEO, EXPOSING U.S. WAR CRIMES COMMITTED IN IRAQ. 
+2011-2012: 
+  > WL PUBLISHES 6 OF THE 10 LARGEST RELEASES OF SENSITIVE MATERIAL IN U.S. HISTORY. UK AUTHORITIES CARRY OUT INTERPOL ARREST WARRANT. JA TAKES REFUGE IN ECUADORIAN EMBASSY, LONDON.
+2017: 
+  > JA FORCIBLY REMOVED FROM EMBASSY.
+2017-2024: 
+  > JA IS INMATE #A9379AY AT HMP BELMARSH, MAX. SEC. 
+2024: 
+  > US. DROPS 17/18 COUNTS AGAINST JA, DISMISSES CASE. 
+  > JA RETURNED TO AUSTRALIA. 
 
 
 
@@ -618,7 +741,7 @@ IN 2025, 6BDM WON THE CANNES FILM FESTIVAL AND FIRST-EVER GOLDEN GLOBE FOR DOCUM
 
 IN THE MODE OF WL, 6BDM’S RELEASE WILL BYPASS TRADITIONAL MEDIA.
 
-A LEADING INFLUENCER WILL INTERVIEW JA AND  GUIDE TRAFFIC TO THE FILM BEHIND A PAYWALL. 
+A LEADING INFLUENCER WILL INTERVIEW JA AND GUIDE TRAFFIC TO THE FILM BEHIND A PAYWALL. 
 
 TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN THE CRYPTO/CYPHER WORLD
 
@@ -795,6 +918,74 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       if (video) {
         video.pause();
         video.style.display = 'none';
+      }
+    }
+
+    // Unlock audio context on user interaction
+    function unlockAudioContext() {
+      if (!audioContextUnlocked) {
+        console.log('🔓 Unlocking audio context...');
+        
+        // Create a silent audio to unlock the context
+        const audio = document.getElementById('obiwan-audio');
+        if (audio) {
+          audio.muted = true;
+          audio.play().then(() => {
+            audio.pause();
+            audio.muted = false;
+            audio.currentTime = 0;
+            audioContextUnlocked = true;
+            console.log('✅ Audio context unlocked');
+          }).catch(err => {
+            console.log('❌ Audio unlock failed:', err.message);
+          });
+        }
+      }
+    }
+
+    // Video3 (JA_OBIWAN) functions - with audio that stops when slide changes
+    function showVideo3Background() {
+      console.log('🎬 Showing JA_OBIWAN hologram video with audio...');
+      const video = document.getElementById('bg-video3');
+      const audio = document.getElementById('obiwan-audio');
+      
+      if (video) {
+        video.style.display = 'block';
+        video.muted = true;   // Keep video muted
+        video.loop = true;    // Video loops visually
+        video.currentTime = 0;
+        video.play().catch(err => console.log('Video3 play failed:', err.message));
+      }
+      
+      if (audio) {
+        audio.volume = 0.7;   // Set audio volume
+        audio.muted = false;  // Ensure not muted
+        audio.currentTime = 0;
+        
+        // Try to play with better error handling
+        console.log('🔊 Attempting to play audio...');
+        audio.play().then(() => {
+          console.log('✅ Audio playing successfully');
+        }).catch(err => {
+          console.log('❌ Audio play failed:', err.message);
+          console.log('🔧 This might require user interaction first');
+        });
+      }
+    }
+
+    function hideVideo3Background() {
+      console.log('🛑 Hiding JA_OBIWAN video and stopping audio...');
+      const video = document.getElementById('bg-video3');
+      const audio = document.getElementById('obiwan-audio');
+      
+      if (video) {
+        video.pause();
+        video.style.display = 'none';
+      }
+      
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0; // Reset to beginning
       }
     }
     
@@ -1280,25 +1471,11 @@ console.warn('Could not load image modes from localStorage:', e);
     // Load saved image modes from localStorage
     loadPageModesFromStorage();
     
-    // Initialize keyword scanning in background (non-blocking)
-    scanAvailableKeywords().then(() => {
-      console.log('Keyword scanning complete (background)');
-      
-      // Direct test of photo_ignorant.webp
-      console.log('🔍 Direct test: Creating photo_ignorant.webp image...');
-      const testImg = document.createElement('img');
-      testImg.src = 'photos/photo_ignorant.webp';
-      testImg.onload = () => {
-        console.log('✅ Direct test: photo_ignorant.webp loaded successfully!');
-        availableKeywords.add('ignorant');
-        console.log('Added "ignorant" to available keywords');
-      };
-      testImg.onerror = () => {
-        console.log('❌ Direct test: photo_ignorant.webp failed to load');
-      };
-    }).catch(err => {
-      console.log('Keyword scanning failed, but presentation continues:', err);
-    });
+    // Disable keyword scanning completely for faster loading
+    console.log('Image keyword scanning disabled - no images available');
+    
+    // Skip all image scanning since no images are available
+    // This prevents the slow startup delay
     
     // Debug function - call from browser console: testImage('ignorant')
     window.testImage = function(keyword) {
@@ -1373,7 +1550,7 @@ console.warn('Could not load image modes from localStorage:', e);
     const el = document.getElementById('unscramble');
     const promptElem = document.getElementById('prompt');
     const navMsg = document.getElementById('nav-msg');
-    const pageCounterEl = document.getElementById('page-counter');
+    const slideCounterEl = document.getElementById('slide-counter');
 
     let currentPage = 0;
     let isAnimating = false;
@@ -1384,6 +1561,12 @@ console.warn('Could not load image modes from localStorage:', e);
     let isInLineRevealMode = false;
     let lineRevealState = { lines: [], currentIndex: 0, element: null, onComplete: null };
     let lastTouchTime = 0; // Track last touch time to prevent double-firing
+    let filmByTimeouts = []; // Track 6BDM animation timeouts
+    let currentTypingInterval = null; // Track the current subtitle typing interval
+    let shouldContinueTyping = true; // Flag to control if typing should continue
+    let timelineRevealState = { sections: [], currentIndex: 0, element: null, onComplete: null };
+    let isInTimelineRevealMode = false;
+    let audioContextUnlocked = false; // Track if audio context is unlocked
 
     // Test if a specific photo file exists
     function testPhotoExists(keyword, format) {
@@ -1475,59 +1658,20 @@ console.warn('Could not load image modes from localStorage:', e);
       return [...new Set(words)]; // Remove duplicates
     }
 
-    // Simple image function - check what photos actually exist
+    // Simple image function - disabled for performance (no images available)
     function showImage(pageIndex) {
       // Hide all existing images first
       document.querySelectorAll('#page img').forEach(img => {
 img.className = '';
       });
       
-      const pageNumber = pageIndex + 1;
-      let imgEl = document.getElementById(`img-${pageNumber}`);
+      // Skip image loading entirely since no images are available
+      console.log(`📷 Image loading skipped for page ${pageIndex + 1} - no images available`);
       
-      // If no image exists for this page yet, try to create one (original system)
-      if (!imgEl) {
-imgEl = createImageForPage(pageNumber);
-      }
+      let imgEl = null; // No image element since none exist
       
-      // Also try keyword-based matching as fallback
-      if (!imgEl) {
-        const pageText = pages[pageIndex];
-        const keywords = extractKeywords(pageText);
-        console.log(`Page ${pageIndex + 1} text preview:`, pageText.substring(0, 100) + '...');
-        console.log(`Page ${pageIndex + 1} available keywords:`, Array.from(availableKeywords));
-        console.log(`Page ${pageIndex + 1} matched keywords:`, keywords);
-        
-        for (const keyword of keywords) {
-          console.log(`🔍 Creating new image for keyword: ${keyword}`);
-          imgEl = createImageForKeyword(keyword);
-       if (imgEl) {
-            console.log(`✅ Created image for keyword: ${keyword}`);
-            break;
-          }
-        }
-      }
-      
-      if (!imgEl) {
-        console.log(`❌ No image found for page ${pageIndex + 1}`);
-      }
-      
-     // Show image if it exists
-       if (imgEl) {
- 
- const mode = pageModes[pageIndex];
- if (mode === IMG_BG) imgEl.className = 'show-bg';
- else if (mode === IMG_BELOW) imgEl.className = 'show-below';
- else if (mode === IMG_SIDE) imgEl.className = 'show-side';
- else if (mode === IMG_SMALL_SIDE) imgEl.className = 'show-small-side';
-       }
-      
-      // Only adjust text if there's actually an image showing
-      if (imgEl && imgEl.complete && imgEl.naturalWidth > 0) {
-adjustTextContainerWidth(pageModes[pageIndex]);
-      } else {
-adjustTextContainerWidth(IMG_OFF);
-      }
+      // Since no images exist, always use IMG_OFF mode for text layout
+      adjustTextContainerWidth(IMG_OFF);
     }
     
     
@@ -1780,41 +1924,200 @@ height: 100%;
        testImg.src = testSrc;
      }
 
-    /* ================== SIMPLE TEXT SIZING ================== */
-      function truncateTextToFit(element, text) {
-element.textContent = text;
-
-      // Simple approach: just ensure text fits without complex calculations
-const textWrap = document.getElementById('text-wrap');
-const availableHeight = textWrap ? textWrap.clientHeight : element.clientHeight;
-
-      // Only adjust if text overflows
-if (element.scrollHeight > availableHeight) {
-  let fontSize = parseFloat(getComputedStyle(element).fontSize);
-  
-        // Reduce font size gradually until it fits
-        while (element.scrollHeight > availableHeight && fontSize > 1.0) {
-          fontSize -= 0.1;
-    element.style.fontSize = fontSize + 'rem';
-  }
-  
-        // If still doesn't fit, add padding
-  if (element.scrollHeight > availableHeight) {
-    element.style.paddingBottom = '2rem';
-  }
+    /* ================== OVERFLOW DETECTION & AUTO-SLIDE CREATION ================== */
+    function checkTextOverflow(element, text) {
+      console.log('🔍 CHECKING OVERFLOW FOR:', text.substring(0, 100) + '...');
+      
+      // Create a temporary element that exactly matches the real element's styling
+      const tempElement = element.cloneNode(false);
+      tempElement.style.cssText = getComputedStyle(element).cssText;
+      tempElement.style.position = 'absolute';
+      tempElement.style.top = '-9999px';
+      tempElement.style.left = '-9999px';
+      tempElement.style.visibility = 'hidden';
+      tempElement.style.height = 'auto';
+      tempElement.style.maxHeight = 'none';
+      tempElement.style.overflow = 'visible';
+      tempElement.textContent = text;
+      
+      // Add to DOM for measurement
+      document.body.appendChild(tempElement);
+      
+      // Force reflow
+      tempElement.offsetHeight;
+      
+      // Get precise measurements
+      const tempRect = tempElement.getBoundingClientRect();
+      const textHeight = tempRect.height;
+      
+      // Remove temp element
+      document.body.removeChild(tempElement);
+      
+      // Get available space (from text container to navbar)
+      const textWrapEl = document.getElementById('text-wrap');
+      const nav = document.getElementById('nav');
+      
+      if (!nav || !textWrapEl) {
+        console.log('❌ Required elements not found');
+        return false;
+      }
+      
+      const textWrapRect = textWrapEl.getBoundingClientRect();
+      const navRect = nav.getBoundingClientRect();
+      
+      // Calculate available height with safety margins
+      const availableHeight = navRect.top - textWrapRect.top - 80; // 80px safety buffer
+      const wouldOverflow = textHeight > availableHeight;
+      
+      console.log(`📏 Enhanced overflow check:
+        - Text height: ${textHeight}px
+        - Available height: ${availableHeight}px
+        - Text wrap top: ${textWrapRect.top}px
+        - Nav top: ${navRect.top}px
+        - Would overflow: ${wouldOverflow}`);
+      
+      return wouldOverflow;
+    }
+    
+    function splitOverflowingText(text) {
+      const lines = text.split('\n');
+      const slides = [];
+      let currentSlide = '';
+      
+      // Create a test element that exactly matches the real element
+      const realElement = document.getElementById('unscramble');
+      const testElement = realElement.cloneNode(false);
+      
+      // Copy all computed styles exactly
+      const computedStyle = getComputedStyle(realElement);
+      testElement.style.cssText = computedStyle.cssText;
+      testElement.style.position = 'absolute';
+      testElement.style.top = '-9999px';
+      testElement.style.left = '-9999px';
+      testElement.style.visibility = 'hidden';
+      testElement.style.height = 'auto';
+      testElement.style.maxHeight = 'none';
+      testElement.style.overflow = 'visible';
+      
+      document.body.appendChild(testElement);
+      
+      // Get available space measurements
+      const textWrapEl = document.getElementById('text-wrap');
+      const nav = document.getElementById('nav');
+      
+      if (!nav || !textWrapEl) {
+        console.log('❌ Required elements not found for splitting');
+        document.body.removeChild(testElement);
+        return [text]; // Return original text if measurement fails
+      }
+      
+      const textWrapRect = textWrapEl.getBoundingClientRect();
+      const navRect = nav.getBoundingClientRect();
+      const maxHeight = navRect.top - textWrapRect.top - 80; // 80px safety buffer
+      
+      console.log(`📄 Text splitting with max height: ${maxHeight}px`);
+      
+      for (let i = 0; i < lines.length; i++) {
+        const lineToAdd = currentSlide ? currentSlide + '\n' + lines[i] : lines[i];
+        testElement.textContent = lineToAdd;
+        
+        // Force reflow and measure
+        testElement.offsetHeight;
+        const testHeight = testElement.getBoundingClientRect().height;
+        
+        if (testHeight > maxHeight && currentSlide) {
+          // Current slide would overflow, save it and start new one
+          slides.push(currentSlide.trim());
+          console.log(`📄 Slide ${slides.length} saved: ${testHeight}px would exceed ${maxHeight}px`);
+          
+          // Start new slide with the current line
+          currentSlide = lines[i];
+          console.log(`📄 Slide ${slides.length + 1} started with: "${lines[i].substring(0, 50)}..."`);
+        } else {
+          // Line fits, add it to current slide
+          currentSlide = lineToAdd;
         }
       }
+      
+      // Add the last slide
+      if (currentSlide.trim()) {
+        slides.push(currentSlide.trim());
+        console.log(`📄 Final slide ${slides.length} added`);
+      }
+      
+      document.body.removeChild(testElement);
+      console.log(`📄 Text split into ${slides.length} slides total`);
+      return slides;
+    }
+    
+    function truncateTextToFit(element, text) {
+      // Check if text overflows
+      if (checkTextOverflow(element, text)) {
+        console.log('Text overflow detected, splitting into multiple slides...');
+        
+        // Split the overflowing text
+        const splitSlides = splitOverflowingText(text);
+        
+        if (splitSlides.length > 1) {
+          console.log(`📄 OVERFLOW DETECTED: Text split into ${splitSlides.length} slides`);
+          console.log(`📄 Slide 1 preview: "${splitSlides[0].substring(0, 100)}..."`);
+          console.log(`📄 Slide 2 preview: "${splitSlides[1].substring(0, 100)}..."`);
+          
+          // Find the current page index
+          const currentPageIndex = currentPage;
+          
+          // Replace the current page content with the first slide
+          pages[currentPageIndex] = splitSlides[0];
+          
+          // Insert additional slides after the current page
+          for (let i = 1; i < splitSlides.length; i++) {
+            pages.splice(currentPageIndex + i, 0, splitSlides[i]);
+            pageModes.splice(currentPageIndex + i, 0, IMG_BG);
+            console.log(`📄 Inserted slide ${i + 1} at position ${currentPageIndex + i}`);
+          }
+          
+          // Update the slide counter
+          slideCounterEl.textContent = `SLIDE ${currentPageIndex + 1} / ${pages.length}`;
+          
+          console.log(`📄 Total slides now: ${pages.length}`);
+        }
+      }
+      
+      // Set the content (either original or first split slide)
+      element.textContent = text;
+    }
 
     /* ================== SCRAMBLE ================== */
     
     // Function to type subtitle text character by character (typewriter effect)
     function decodeSubtitle(element, baseText, subtitleText, onComplete) {
+      // Check if we should even start typing (page might have changed)
+      if (!shouldContinueTyping) {
+        console.log('🛑 Typing cancelled - page navigation detected');
+        return;
+      }
+      
+      // Clear any existing typing animation first
+      if (currentTypingInterval) {
+        clearInterval(currentTypingInterval);
+        currentTypingInterval = null;
+        console.log('🧹 Cleared previous typing animation');
+      }
+      
       let charIndex = 0;
       const len = subtitleText.length;
       
       console.log('Starting subtitle typewriter animation...');
       
-      const typewriterInterval = setInterval(() => {
+      currentTypingInterval = setInterval(() => {
+        // Check if we should continue typing
+        if (!shouldContinueTyping) {
+          console.log('🛑 Typing cancelled mid-animation');
+          clearInterval(currentTypingInterval);
+          currentTypingInterval = null;
+          return;
+        }
+        
         // Show characters up to current index
         const currentText = subtitleText.substring(0, charIndex + 1);
         element.textContent = baseText + currentText;
@@ -1826,10 +2129,13 @@ if (element.scrollHeight > availableHeight) {
         
         charIndex++;
         if (charIndex >= len) {
-          clearInterval(typewriterInterval);
+          clearInterval(currentTypingInterval);
+          currentTypingInterval = null;
           element.textContent = baseText + subtitleText; // Final clean text
           console.log('Subtitle typewriter complete');
-          onComplete && onComplete();
+          if (shouldContinueTyping) { // Only call onComplete if we weren't cancelled
+            onComplete && onComplete();
+          }
         }
       }, 50); // 50ms per character for smooth typewriter effect
     }
@@ -1921,13 +2227,25 @@ if ((index*chunkSize)>=len){
   if (text.includes('A FILM BY EUGENE JARECKI') && text.includes('6BDM: JULIAN ASSANGE')) {
     console.log('A FILM BY + 6BDM detected - showing delayed subtitle...');
     
+    // Show JA_OBIWAN video
+    showVideo3Background();
+    
+    // Enable typing for this specific animation
+    shouldContinueTyping = true;
+    
     // First show only "A FILM BY EUGENE JARECKI"
     const filmByText = text.split('\n\n6BDM:')[0];
     element.textContent = filmByText;
     
-    // After 4 seconds, decode the subtitle
-    setTimeout(() => {
-      console.log('Starting 6BDM subtitle decode after 4 second delay');
+    // After 2 seconds, decode the subtitle
+    const subtitleTimeout = setTimeout(() => {
+      // Check if we should still continue (page might have changed)
+      if (!shouldContinueTyping) {
+        console.log('🛑 6BDM animation cancelled - page changed');
+        return;
+      }
+      
+      console.log('Starting 6BDM subtitle decode after 2 second delay');
       
       // Extract the 6BDM part
       const subtitleText = '\n\n6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH';
@@ -1936,21 +2254,141 @@ if ((index*chunkSize)>=len){
       // Decode the subtitle with scrambling effect
       decodeSubtitle(element, baseText, subtitleText, () => {
         // Continue to next slide after subtitle decode completes
-        setTimeout(() => {
+        const continueTimeout = setTimeout(() => {
           onComplete && onComplete();
         }, 1000); // Brief pause before continuing
+        filmByTimeouts.push(continueTimeout);
       });
-    }, 4000); // 4 second delay for subtitle
+    }, 2000); // 2 second delay for subtitle
+    filmByTimeouts.push(subtitleTimeout);
   } else if (text.includes('A FILM BY EUGENE JARECKI')) {
     console.log('A FILM BY detected - adding 5 second delay before continuing...');
-    setTimeout(() => {
+    const filmByTimeout = setTimeout(() => {
       onComplete && onComplete();
     }, 5000); // 5 second delay
+    filmByTimeouts.push(filmByTimeout);
   } else {
     onComplete && onComplete();
   }
 }
       },100);
+    }
+
+    /* ================== TIMELINE YEAR-BY-YEAR REVEAL ================== */
+    function revealTimelineYearByYear(element, text, onComplete) {
+      // Clear any existing animations
+      if (currentInterval) {
+        clearInterval(currentInterval);
+        currentInterval = null;
+      }
+      
+      isAnimating = true;
+      isInTimelineRevealMode = true;
+      promptElem.style.visibility = 'hidden';
+      
+      // Split timeline into year sections
+      const yearSections = parseTimelineSections(text);
+      
+      // Set up timeline reveal state
+      timelineRevealState = {
+        sections: yearSections,
+        currentIndex: 0,
+        element: element,
+        onComplete: onComplete
+      };
+      
+      console.log('Starting year-by-year timeline reveal...');
+      console.log(`Total year sections: ${yearSections.length}`);
+      
+      // Clear element and show first year section with decode animation
+      element.textContent = '';
+      showNextTimelineSection();
+    }
+    
+    function parseTimelineSections(text) {
+      // Split by year patterns (2006:, 2010:, etc.)
+      const yearPattern = /(\d{4}(-\d{4})?:\s*)/g;
+      const sections = [];
+      
+      // Find all year markers
+      const matches = [...text.matchAll(yearPattern)];
+      
+      if (matches.length === 0) {
+        // No year patterns found, return whole text as single section
+        return [text];
+      }
+      
+      // Split text at each year marker
+      let lastIndex = 0;
+      matches.forEach((match, i) => {
+        if (i > 0) {
+          // Extract section from previous year to current year
+          const sectionText = text.substring(lastIndex, match.index).trim();
+          if (sectionText) {
+            sections.push(sectionText);
+          }
+        }
+        lastIndex = match.index;
+      });
+      
+      // Add the last section
+      const finalSection = text.substring(lastIndex).trim();
+      if (finalSection) {
+        sections.push(finalSection);
+      }
+      
+      console.log('Parsed timeline sections:', sections.map(s => s.substring(0, 50) + '...'));
+      return sections;
+    }
+    
+    function showNextTimelineSection() {
+      if (timelineRevealState.currentIndex < timelineRevealState.sections.length) {
+        const currentSection = timelineRevealState.sections[timelineRevealState.currentIndex];
+        const sectionNumber = timelineRevealState.currentIndex + 1;
+        
+        console.log(`Revealing timeline section ${sectionNumber}: "${currentSection.substring(0, 100)}..."`);
+        
+        if (timelineRevealState.currentIndex === 0) {
+          // First section: decode with scrambling animation
+          scrambleFastChunks(timelineRevealState.element, currentSection, () => {
+            timelineRevealState.currentIndex++;
+            // Show navigation message for next section
+            if (timelineRevealState.currentIndex < timelineRevealState.sections.length) {
+              navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+              navMsg.style.fontSize = '0.9rem';
+              navMsg.style.visibility = 'visible';
+            } else {
+              // All sections revealed
+              finishTimelineReveal();
+            }
+          });
+        } else {
+          // Subsequent sections: append instantly with single line break
+          const currentContent = timelineRevealState.element.textContent;
+          timelineRevealState.element.textContent = currentContent + '\n' + currentSection;
+          
+          console.log(`Instantly added timeline section ${sectionNumber}`);
+          timelineRevealState.currentIndex++;
+          
+          // Show navigation message for next section
+          if (timelineRevealState.currentIndex < timelineRevealState.sections.length) {
+            navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+            navMsg.style.fontSize = '0.9rem';
+            navMsg.style.visibility = 'visible';
+          } else {
+            // All sections revealed
+            finishTimelineReveal();
+          }
+        }
+      }
+    }
+    
+    function finishTimelineReveal() {
+      console.log('All timeline sections revealed, finishing...');
+      isAnimating = false;
+      isInTimelineRevealMode = false;
+      navMsg.style.visibility = 'hidden';
+      timelineRevealState.onComplete && timelineRevealState.onComplete();
     }
 
     /* ================== LINE BY LINE REVEAL ================== */
@@ -1992,8 +2430,8 @@ if ((index*chunkSize)>=len){
         const currentLine = lineRevealState.lines[lineRevealState.currentIndex];
         const lineNumber = lineRevealState.currentIndex + 1;
         
-        // Determine if this line should be decoded (first 2 lines only - 2006 content)
-        const shouldDecode = lineRevealState.currentIndex < 2;
+        // Determine if this line should be decoded (only first line - first item only)
+        const shouldDecode = lineRevealState.currentIndex === 0;
         
         if (shouldDecode) {
           console.log(`Decoding line ${lineNumber}: "${currentLine}"`);
@@ -2057,10 +2495,39 @@ if ((index*chunkSize)>=len){
         lineRevealTimeouts.forEach(timeout => clearTimeout(timeout));
         lineRevealTimeouts = [];
         
+        // Clear any ongoing 6BDM animation timeouts
+        filmByTimeouts.forEach(timeout => clearTimeout(timeout));
+        filmByTimeouts = [];
+        console.log('🧹 Cleared all 6BDM timeouts');
+        
+        // Clear any ongoing typing animation
+        if (currentTypingInterval) {
+          clearInterval(currentTypingInterval);
+          currentTypingInterval = null;
+          console.log('🧹 Cleared typing animation');
+        }
+        
+        // Stop any typing animations that might be about to start
+        shouldContinueTyping = false;
+        console.log('🧹 Disabled typing animations');
+        
+        // Clear any running scrambling animation
+        if (currentInterval) {
+          clearInterval(currentInterval);
+          currentInterval = null;
+          console.log('🧹 Cleared scrambling animation');
+        }
+        
+        // Reset animation state
+        isAnimating = false;
+        
         // Reset line reveal mode
         isInLineRevealMode = false;
         
-        pageCounterEl.textContent = `SLIDE ${pageIndex + 1} / ${pages.length}`;
+        // Reset timeline reveal mode
+        isInTimelineRevealMode = false;
+        
+        slideCounterEl.textContent = `SLIDE ${pageIndex + 1} / ${pages.length}`;
         navMsg.style.visibility = 'hidden';
         
         // Set data-page attribute for CSS targeting
@@ -2069,7 +2536,51 @@ if ((index*chunkSize)>=len){
        
       // Use simple, consistent font sizing - smaller on mobile
         const isMobile = window.innerWidth <= 768;
-        el.style.fontSize = isMobile ? '0.8rem' : '1.2rem';
+        
+        // Check if this is timeline content first
+        const pageContent = pages[pageIndex];
+        const isTimelineContent = pageContent.includes('2006:') || 
+                                 pageContent.includes('2010:') || 
+                                 pageContent.includes('2011-2012:') || 
+                                 pageContent.includes('2017:') || 
+                                 pageContent.includes('2017-2024:') || 
+                                 pageContent.includes('2024:') || 
+                                 pageContent.includes('RETURNED TO AUSTRALIA');
+        
+        if (isTimelineContent) {
+          // Make timeline content 25% smaller
+          el.style.fontSize = isMobile ? '0.6rem' : '0.9rem';
+          
+          // Mark as timeline content for CSS protection
+          el.setAttribute('data-timeline', 'true');
+          
+          // Preserve exact formatting for timeline content - prevent any text modifications
+          el.style.whiteSpace = 'pre-wrap';
+          el.style.wordWrap = 'normal';
+          el.style.overflowWrap = 'normal';
+          el.style.hyphens = 'none';
+          el.style.textIndent = '0';
+          el.style.wordBreak = 'normal';
+          el.style.lineHeight = '1.5';
+          
+          console.log('Timeline content detected - using 25% smaller text with preserved formatting');
+        } else {
+          // Normal text size
+          el.style.fontSize = isMobile ? '0.8rem' : '1.2rem';
+          
+          // Remove timeline marker
+          el.removeAttribute('data-timeline');
+          
+          // Reset any timeline-specific formatting
+          el.style.whiteSpace = '';
+          el.style.wordWrap = '';
+          el.style.overflowWrap = '';
+          el.style.hyphens = '';
+          el.style.textIndent = '';
+          el.style.wordBreak = '';
+          el.style.lineHeight = '';
+        }
+        
         el.style.paddingBottom = ''; // Reset any padding
        
        // Show text for all pages
@@ -2088,16 +2599,48 @@ if ((index*chunkSize)>=len){
          // Check if this is the Collateral Murder video slide
          const isCollateralMurderSlide = pages[pageIndex].includes('It published the infamous Collateral Murder video in 2010');
          
-         // Check if this page contains 2006-2024 timeline content that should use line-by-line reveal
-         const isTimelineContent = pages[pageIndex].includes('2006:') || pages[pageIndex].includes('2024:');
-         
          if (isTimelineContent) {
-           // Use line-by-line reveal for 2006-2024 timeline content
-           revealLineByLine(el, pages[pageIndex], () => {
+           // For timeline content, use year-by-year reveal system
+           console.log(`🎬 STARTING TIMELINE PAGE ${pageIndex + 1} - Year-by-year reveal`);
+           console.log(`📝 Timeline content preview: "${pages[pageIndex].substring(0, 200)}..."`);
+           
+           // Use the new year-by-year timeline reveal
+           revealTimelineYearByYear(el, pages[pageIndex], () => {
              // Timeline reveal complete
-             console.log('Timeline reveal completed');
+             console.log('Timeline year-by-year reveal completed');
            });
          } else {
+           console.log(`🎬 STARTING PAGE ${pageIndex + 1} - Regular content`);
+           console.log(`📝 Content preview: "${pages[pageIndex].substring(0, 200)}..."`);
+           
+           // Check for overflow BEFORE starting animation
+           console.log('🔍 Running pre-animation overflow check...');
+           if (checkTextOverflow(el, pages[pageIndex])) {
+             console.log('🚨 PRE-ANIMATION OVERFLOW DETECTED! Splitting content...');
+             
+             // Split the content first
+             const splitSlides = splitOverflowingText(pages[pageIndex]);
+             
+             if (splitSlides.length > 1) {
+               console.log(`📄 PRE-SPLIT: Content split into ${splitSlides.length} slides`);
+               
+               // Replace current page with first slide
+               pages[pageIndex] = splitSlides[0];
+               
+               // Insert additional slides after current page
+               for (let i = 1; i < splitSlides.length; i++) {
+                 pages.splice(pageIndex + i, 0, splitSlides[i]);
+                 pageModes.splice(pageIndex + i, 0, IMG_BG);
+               }
+               
+               // Update slide counter
+               slideCounterEl.textContent = `SLIDE ${pageIndex + 1} / ${pages.length}`;
+               console.log(`📄 Total slides now: ${pages.length}`);
+             }
+           } else {
+             console.log('✅ No overflow detected, proceeding with normal animation');
+           }
+           
            scrambleFastChunks(el, pages[pageIndex], () => {
            // Text displayed
            if (isCollateralMurderSlide) {
@@ -2168,6 +2711,9 @@ if ((index*chunkSize)>=len){
          // Hide video2 on other pages
          hideVideo2Background();
        }
+       
+       // Hide video3 on all pages (it only shows during A FILM BY animation)
+       hideVideo3Background();
      }
 
     // Create persistent text that stays on screen
@@ -2193,8 +2739,8 @@ if ((index*chunkSize)>=len){
     /* ================== NAV ================== */
     let lastAdvance = 0;
     function throttle(){ const now=Date.now(); if (now-lastAdvance<300) return false; lastAdvance=now; return true; }
-    function safeAdvance(){ if (!throttle()) return; startPage(currentPage+1); }
-    function goBack(){ if (!throttle()) return; startPage(currentPage-1); }
+    function safeAdvance(){ if (!throttle()) return; unlockAudioContext(); startPage(currentPage+1); }
+    function goBack(){ if (!throttle()) return; unlockAudioContext(); startPage(currentPage-1); }
 
     document.getElementById('nav-prev').addEventListener('pointerdown', goBack, {passive:true});
     document.getElementById('nav-next').addEventListener('pointerdown', safeAdvance, {passive:true});
@@ -2204,6 +2750,12 @@ if ((index*chunkSize)>=len){
     document.getElementById('nav-next').addEventListener('click', safeAdvance);
  document.addEventListener('pointerdown', (e)=>{ 
       if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
+      
+      // If in timeline reveal mode, clicking anywhere advances to next year section
+      if (isInTimelineRevealMode) {
+        showNextTimelineSection();
+        return;
+      }
       
       // If in line reveal mode, clicking anywhere advances to next line
       if (isInLineRevealMode) {
@@ -2310,7 +2862,7 @@ document.addEventListener('click', (e)=>{
       document.documentElement.style.setProperty('--font-family', selectedFont.family);
       
       // Apply font family to all text elements
-      const allTextElements = document.querySelectorAll('#unscramble, #prompt, #nav-msg, #nav-prev, #nav-next, #page-counter');
+      const allTextElements = document.querySelectorAll('#unscramble, #prompt, #nav-msg, #nav-prev, #nav-next, #slide-counter');
       allTextElements.forEach(el => {
         if (el) {
           el.style.fontFamily = selectedFont.family;
@@ -2327,14 +2879,20 @@ document.addEventListener('click', (e)=>{
       // Mute any keyboard sounds
       e.preventDefault();
       
-      // Check if we're in line reveal mode first
+      // Check if we're in timeline reveal mode first
+      if (isInTimelineRevealMode && (e.code==='Space'||e.code==='ArrowRight')) {
+        showNextTimelineSection();
+        return;
+      }
+      
+      // Check if we're in line reveal mode
       if (isInLineRevealMode && (e.code==='Space'||e.code==='ArrowRight')) {
         showNextLineManual();
         return;
       }
       
-      if (e.code==='Space'||e.code==='ArrowRight'){ startPage(currentPage+1); }
-      else if (e.code==='ArrowLeft'){ startPage(currentPage-1); }
+      if (e.code==='Space'||e.code==='ArrowRight'){ unlockAudioContext(); startPage(currentPage+1); }
+      else if (e.code==='ArrowLeft'){ unlockAudioContext(); startPage(currentPage-1); }
 
       const k = e.key;
      if (k==='ArrowUp'){ 
@@ -2416,7 +2974,7 @@ document.exitFullscreen();
     (function(){
       const navPrev = document.getElementById('nav-prev');
       const navNext = document.getElementById('nav-next');
-      const terminals = [document.getElementById('unscramble'), document.getElementById('prompt'), document.getElementById('nav-msg'), navPrev, navNext, document.getElementById('page-counter')];
+      const terminals = [document.getElementById('unscramble'), document.getElementById('prompt'), document.getElementById('nav-msg'), navPrev, navNext, document.getElementById('slide-counter')];
       let colorIndex=2; // Default to soft green (option 3)
       const colors=['#CCCCCC','#00FF00','#66FF66'];
       function apply(){
