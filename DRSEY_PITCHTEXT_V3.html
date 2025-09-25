@@ -114,6 +114,7 @@
     }
     
     
+    
     /* Video overlay (disabled for small centered video) */
     .bg-overlay {
       display: none;
@@ -191,7 +192,8 @@
       background:var(--bg); 
       color:var(--fg); 
       font-family:var(--font-family);
-      padding:5vw; 
+      padding:5vw;
+      perspective: 1000px; 
       padding-left: 25vw;
       max-width:80vw; 
       margin: 2vh auto; 
@@ -293,8 +295,8 @@ font-size: 0.6rem;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: calc(40vw - 1rem);
-        height: calc(25vh - 1rem);
+        width: calc(60vw - 1rem);
+        height: calc(40vh - 1rem);
         object-fit: contain;
         object-position: center center;
       }
@@ -718,7 +720,7 @@ z-index: 2 !important;
     defaultMuted
     style="display: none;"
   >
-    <source src="JA_OBIWAN.mp4" type="video/mp4" />
+    <source src="obiwan_perspective.mp4" type="video/mp4" />
   </video>
   
   <audio
@@ -726,7 +728,7 @@ z-index: 2 !important;
     preload="metadata"
     style="display: none;"
   >
-    <source src="JA_OBIWAN.mp4" type="audio/mp4" />
+    <source src="obiwan_perspective.mp4" type="audio/mp4" />
   </audio>
 
   <div class="bg-overlay" id="bg-overlay" style="display: none;"></div>
@@ -2546,7 +2548,6 @@ if ((index*chunkSize)>=len){
         const currentSection = timelineRevealState.sections[timelineRevealState.currentIndex];
         const sectionNumber = timelineRevealState.currentIndex + 1;
         
-        console.log(`Revealing timeline section ${sectionNumber}: "${currentSection.substring(0, 100)}..."`);
         
         if (timelineRevealState.currentIndex === 0) {
           // First section: decode with scrambling animation
@@ -2567,7 +2568,6 @@ if ((index*chunkSize)>=len){
           const currentContent = timelineRevealState.element.textContent;
           timelineRevealState.element.textContent = currentContent + '\n' + currentSection;
           
-          console.log(`Instantly added timeline section ${sectionNumber}`);
           timelineRevealState.currentIndex++;
           
           // Show navigation message for next section
@@ -2794,14 +2794,15 @@ if ((index*chunkSize)>=len){
          // Check if this is the Collateral Murder video slide
          const isCollateralMurderSlide = pages[pageIndex].includes('It published the infamous Collateral Murder video in 2010');
          
-         if (isTimelineContent) {
-           // For timeline content, use year-by-year reveal system
-           
-           // Use the new year-by-year timeline reveal
-           revealTimelineYearByYear(el, pages[pageIndex], () => {
-             // Timeline reveal complete
-             console.log('Timeline year-by-year reveal completed');
-           });
+        if (isTimelineContent) {
+          // For timeline content, use year-by-year reveal system
+          console.log('Timeline content detected, starting year-by-year reveal');
+          
+          // Use the new year-by-year timeline reveal
+          revealTimelineYearByYear(el, pages[pageIndex], () => {
+            // Timeline reveal complete
+            console.log('Timeline year-by-year reveal completed');
+          });
          } else {
            // Check for overflow BEFORE starting animation
            if (checkTextOverflow(el, pages[pageIndex])) {
@@ -2996,6 +2997,7 @@ if ((index*chunkSize)>=len){
        
        // If in timeline reveal mode, tapping anywhere advances to next year section
        if (isInTimelineRevealMode) {
+         console.log('Mobile touchend: Timeline reveal mode detected, advancing to next section');
          e.preventDefault(); // Prevent default touch behavior
          showNextTimelineSection();
          return;
