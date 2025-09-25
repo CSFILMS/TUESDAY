@@ -244,7 +244,7 @@ transparent 4px
       body {
         padding: 0 !important;
         margin: 0 !important;
-        font-size: 0.8rem;
+font-size: 0.8rem;
         padding-left: 0 !important;
         max-width: 100vw !important;
         width: 100vw !important;
@@ -288,14 +288,14 @@ font-size: 0.6rem;
         font-size: 0.7rem;
       }
       
-      /* Mobile video sizing - centered and properly sized */
+      /* Mobile video sizing - much smaller on mobile */
       .bg-video {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: calc(80vw - 2rem);
-        height: calc(45vh - 2rem);
-        object-fit: cover;
+        width: calc(40vw - 1rem);
+        height: calc(25vh - 1rem);
+        object-fit: contain;
         object-position: center center;
       }
       
@@ -2698,24 +2698,20 @@ if ((index*chunkSize)>=len){
         // Clear any ongoing 6BDM animation timeouts
         filmByTimeouts.forEach(timeout => clearTimeout(timeout));
         filmByTimeouts = [];
-        console.log('🧹 Cleared all 6BDM timeouts');
         
         // Clear any ongoing typing animation
         if (currentTypingInterval) {
           clearInterval(currentTypingInterval);
           currentTypingInterval = null;
-          console.log('🧹 Cleared typing animation');
         }
         
         // Stop any typing animations that might be about to start
         shouldContinueTyping = false;
-        console.log('🧹 Disabled typing animations');
         
         // Clear any running scrambling animation
         if (currentInterval) {
           clearInterval(currentInterval);
           currentInterval = null;
-          console.log('🧹 Cleared scrambling animation');
         }
         
         // Reset animation state
@@ -2763,7 +2759,6 @@ if ((index*chunkSize)>=len){
           el.style.wordBreak = 'normal';
           el.style.lineHeight = '1.5';
           
-          console.log('Timeline content detected - using 25% smaller text with preserved formatting');
         } else {
           // Normal text size
         el.style.fontSize = isMobile ? '0.8rem' : '1.2rem';
@@ -2801,8 +2796,6 @@ if ((index*chunkSize)>=len){
          
          if (isTimelineContent) {
            // For timeline content, use year-by-year reveal system
-           console.log(`🎬 STARTING TIMELINE PAGE ${pageIndex + 1} - Year-by-year reveal`);
-           console.log(`📝 Timeline content preview: "${pages[pageIndex].substring(0, 200)}..."`);
            
            // Use the new year-by-year timeline reveal
            revealTimelineYearByYear(el, pages[pageIndex], () => {
@@ -2810,19 +2803,13 @@ if ((index*chunkSize)>=len){
              console.log('Timeline year-by-year reveal completed');
            });
          } else {
-           console.log(`🎬 STARTING PAGE ${pageIndex + 1} - Regular content`);
-           console.log(`📝 Content preview: "${pages[pageIndex].substring(0, 200)}..."`);
-           
            // Check for overflow BEFORE starting animation
-           console.log('🔍 Running pre-animation overflow check...');
            if (checkTextOverflow(el, pages[pageIndex])) {
-             console.log('🚨 PRE-ANIMATION OVERFLOW DETECTED! Splitting content...');
              
              // Split the content first
              const splitSlides = splitOverflowingText(pages[pageIndex]);
              
              if (splitSlides.length > 1) {
-               console.log(`📄 PRE-SPLIT: Content split into ${splitSlides.length} slides`);
                
                // Replace current page with first slide
                pages[pageIndex] = splitSlides[0];
@@ -2835,10 +2822,7 @@ if ((index*chunkSize)>=len){
                
                // Update slide counter
                slideCounterEl.textContent = `SLIDE ${pageIndex + 1} / ${pages.length}`;
-               console.log(`📄 Total slides now: ${pages.length}`);
              }
-           } else {
-             console.log('✅ No overflow detected, proceeding with normal animation');
            }
            
            scrambleFastChunks(el, pages[pageIndex], () => {
