@@ -496,50 +496,20 @@ z-index: 1;
      /* Mobile-specific text-wrap overrides */
      @media (max-width: 768px) {
        #text-wrap {
-         margin: 0.5rem; /* Equal margins on all sides */
-         height: calc(100% - 1rem); /* Account for margins */
-         padding: 0.5rem; /* Add some padding for better readability */
-         width: calc(100% - 1rem); /* Ensure it fits within screen */
-         box-sizing: border-box; /* Include padding in width calculation */
-         overflow: hidden; /* Prevent text from overflowing */
-         position: relative; /* For absolute positioning of text */
+         margin: 1rem 0.5rem 0 0.5rem; /* Simple margins on mobile */
+         height: calc(100% - 2rem); /* Account for margins */
+         padding: 0.5rem; /* Add padding for readability */
+         width: calc(100% - 1rem); /* Ensure it fits */
+         box-sizing: border-box;
        }
        
-       /* Force all text to wrap on mobile - override everything */
-       #unscramble {
-         white-space: normal !important; /* Allow normal wrapping */
-         word-wrap: break-word !important;
-         overflow-wrap: break-word !important;
-         word-break: break-word !important;
-         max-width: 100% !important;
-         width: 100% !important;
-         hyphens: auto !important;
-         position: absolute !important;
-         top: 0 !important;
-         left: 0 !important;
-         right: 0 !important;
-         bottom: 0 !important;
-         overflow: auto !important; /* Allow scrolling if needed */
+       /* Make text bigger on mobile but keep timeline text small */
+       #unscramble:not([data-timeline="true"]) {
+         font-size: 1rem !important;
        }
        
-       /* Ensure timeline text maintains its smaller size on mobile */
        #unscramble[data-timeline="true"] {
          font-size: 0.6rem !important;
-         max-width: 100% !important; /* Prevent horizontal overflow */
-         word-wrap: break-word !important;
-         overflow-wrap: break-word !important;
-         white-space: pre-wrap !important; /* Allow wrapping while preserving line breaks */
-         word-break: break-word !important; /* Force breaking of long words */
-       }
-       
-       /* Normal text gets bigger on mobile */
-       #unscramble:not([data-timeline="true"]) {
-         font-size: 1.1rem !important;
-         max-width: 100% !important; /* Prevent horizontal overflow */
-         word-wrap: break-word !important;
-         overflow-wrap: break-word !important;
-         white-space: pre-wrap !important; /* Allow wrapping while preserving line breaks */
-         word-break: break-word !important; /* Force breaking of long words */
        }
      }
                     #unscramble { 
@@ -663,18 +633,6 @@ z-index: 2 !important;
       text-indent: 0 !important;
       word-break: normal !important;
       line-height: 1.5 !important;
-    }
-    
-    /* Mobile-specific timeline text - allow breaking to prevent overflow */
-    @media (max-width: 768px) {
-      #unscramble[data-timeline="true"] {
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        max-width: 100% !important;
-        white-space: pre-wrap !important;
-        word-break: break-word !important;
-        hyphens: auto !important; /* Allow hyphenation on mobile */
-      }
     }
     
     /* Collateral Murder video slide animation */
@@ -1706,23 +1664,6 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
     const fullText = fullTextRaw.toUpperCase();
     const pages = fullText.split(/\n{4,}/);
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,\'"?!-—:;\n';
-    
-    // Function to force text wrapping on mobile
-    function forceMobileTextWrap(element) {
-      if (window.innerWidth <= 768) {
-        const text = element.textContent;
-        const words = text.split(' ');
-        const maxWordsPerLine = 8; // Adjust based on screen size
-        const wrappedLines = [];
-        
-        for (let i = 0; i < words.length; i += maxWordsPerLine) {
-          const line = words.slice(i, i + maxWordsPerLine).join(' ');
-          wrappedLines.push(line);
-        }
-        
-        element.textContent = wrappedLines.join('\n');
-      }
-    }
 
  // Image modes
      const IMG_OFF = 0;
@@ -2630,13 +2571,6 @@ if ((index*chunkSize)>=len){
           truncateTextToFit(element, text);
           isAnimating=false;
           
-          // Force text wrapping on mobile after scrambling
-          if (window.innerWidth <= 768) {
-            setTimeout(() => {
-              forceMobileTextWrap(element);
-            }, 100);
-          }
-          
           // Only show "PRESS SPACEBAR TO CONTINUE" for first 2 pages
           if (currentPage < 2) {
             navMsg.innerHTML='PRESS SPACEBAR<br>TO CONTINUE';
@@ -2934,7 +2868,7 @@ if ((index*chunkSize)>=len){
           
         } else {
           // Normal text size - bigger on mobile for better readability
-        el.style.fontSize = isMobile ? '1.1rem' : '1.2rem';
+        el.style.fontSize = isMobile ? '1rem' : '1.2rem';
           
           // Remove timeline marker
           el.removeAttribute('data-timeline');
@@ -2960,13 +2894,6 @@ if ((index*chunkSize)>=len){
          
          el.textContent='';
          isAnimating = false;
-         
-         // Force text wrapping on mobile
-         if (window.innerWidth <= 768) {
-           setTimeout(() => {
-             forceMobileTextWrap(el);
-           }, 100);
-         }
          
          // Remove any existing animation classes
          el.classList.remove('collateral-murder-slide');
