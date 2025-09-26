@@ -986,10 +986,12 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
          
          video.style.display = 'block';
          
-         // Set video audio volume
-         video.muted = false;
-         video.volume = 0.7;
-         video.defaultMuted = false;
+         // Set video audio volume (ensure it overrides global muting)
+         setTimeout(() => {
+           video.muted = false;
+           video.volume = 0.7;
+           video.defaultMuted = false;
+         }, 100);
         
         // Reset video to beginning for sync
         video.currentTime = 0;
@@ -1046,10 +1048,12 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
          
          video.style.display = 'block';
          
-         // Set video audio volume
-         video.muted = false;
-         video.volume = 0.7;
-         video.defaultMuted = false;
+         // Set video audio volume (ensure it overrides global muting)
+         setTimeout(() => {
+           video.muted = false;
+           video.volume = 0.7;
+           video.defaultMuted = false;
+         }, 100);
         
         // Reset video to beginning for sync
         video.currentTime = 0;
@@ -1172,9 +1176,13 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
         showVideoLoading();
         
          video.style.display = 'block';
-         video.muted = false;   // Enable video audio
-         video.volume = 0.7;    // Set audio volume
          video.loop = true;    // Video loops visually
+         
+         // Set video audio volume (ensure it overrides global muting)
+         setTimeout(() => {
+           video.muted = false;   // Enable video audio
+           video.volume = 0.7;    // Set audio volume
+         }, 100);
         video.currentTime = 0;
         
         // Set up video event listeners
@@ -3316,8 +3324,8 @@ if (e.key==='1'||e.key==='2'||e.key==='3'){ colorIndex=parseInt(e.key,10)-1; app
         e.preventDefault();
       });
       
-      // Mute all audio elements by default
-      document.querySelectorAll('audio, video').forEach(media => {
+      // Mute only audio elements by default (videos will be controlled individually)
+      document.querySelectorAll('audio').forEach(media => {
         media.muted = true;
         media.volume = 0;
       });
