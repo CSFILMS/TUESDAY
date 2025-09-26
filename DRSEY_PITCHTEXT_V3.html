@@ -711,46 +711,7 @@ z-index: 2 !important;
   </style>
 </head>
 <body>
-  <!-- Background video for last page -->
-  <video
-    id="bg-video"
-    class="bg-video"
-    autoplay
-    muted
-    playsinline
-    loop
-    preload="metadata"
-    poster="./assets/bg-poster.jpg"
-    aria-hidden="true"
-    tabindex="-1"
-    disablepictureinpicture
-    controlslist="nodownload noplaybackrate noptimizequality nodatachannel"
-    volume="0"
-    defaultMuted
-  >
-    <source src="VIDEOS/video15.mp4" type="video/mp4" />
-    <source src="VIDEOS/video15.webm" type="video/webm" />
-  </video>
-
-  <video
-    id="bg-video2"
-    class="bg-video"
-    autoplay
-    muted
-    playsinline
-    loop
-    preload="metadata"
-    poster="./assets/bg-poster.jpg"
-    aria-hidden="true"
-    tabindex="-1"
-    disablepictureinpicture
-    controlslist="nodownload noplaybackrate noptimizequality nodatachannel"
-    volume="0"
-    defaultMuted
-    style="display: none;"
-  >
-    <source src="VIDEOS/video2.mp4" type="video/mp4" />
-  </video>
+  <!-- Removed unused video elements to optimize file size -->
 
   <video
     id="bg-video3"
@@ -979,125 +940,7 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       });
     }
 
-    // Video background functions
-    function showVideoBackground() {
-      console.log('🎬 Showing video15...');
-      const video = document.getElementById('bg-video');
-      
-      if (video) {
-        console.log('✅ Video element found, showing...');
-        
-        // Show loading status
-        showVideoLoading();
-        
-        video.style.display = 'block';
-        
-        // Ensure video is completely muted
-        video.muted = true;
-        video.volume = 0;
-        video.defaultMuted = true;
-        
-        // Reset video to beginning for sync
-        video.currentTime = 0;
-        
-        // Set up video event listeners
-        const onCanPlay = () => {
-          console.log('✅ Video15 ready to play');
-          hideVideoLoading();
-          video.removeEventListener('canplay', onCanPlay);
-          video.removeEventListener('error', onError);
-        };
-        
-        const onError = (e) => {
-          console.log('❌ Video15 failed to load:', e);
-          hideVideoLoading();
-          video.removeEventListener('canplay', onCanPlay);
-          video.removeEventListener('error', onError);
-        };
-        
-        video.addEventListener('canplay', onCanPlay);
-        video.addEventListener('error', onError);
-        
-        video.play().then(() => {
-          console.log('✅ Video15 playing from start (muted)');
-        }).catch(err => {
-          console.log('❌ Video15 play failed:', err.message);
-          hideVideoLoading();
-        });
-      } else {
-        console.error('❌ Video element not found!');
-      }
-    }
-
-    function hideVideoBackground() {
-      console.log('🛑 Hiding video...');
-      const video = document.getElementById('bg-video');
-      
-      if (video) {
-        video.pause();
-        video.style.display = 'none';
-      }
-    }
-
-    // Video2 background functions
-    function showVideo2Background() {
-      console.log('🎬 Showing video2...');
-      const video = document.getElementById('bg-video2');
-      
-      if (video) {
-        console.log('✅ Video2 element found, showing...');
-        
-        // Show loading status
-        showVideoLoading();
-        
-        video.style.display = 'block';
-        
-        // Ensure video is completely muted
-        video.muted = true;
-        video.volume = 0;
-        video.defaultMuted = true;
-        
-        // Reset video to beginning for sync
-        video.currentTime = 0;
-        
-        // Set up video event listeners
-        const onCanPlay = () => {
-          console.log('✅ Video2 ready to play');
-          hideVideoLoading();
-          video.removeEventListener('canplay', onCanPlay);
-          video.removeEventListener('error', onError);
-        };
-        
-        const onError = (e) => {
-          console.log('❌ Video2 failed to load:', e);
-          hideVideoLoading();
-          video.removeEventListener('canplay', onCanPlay);
-          video.removeEventListener('error', onError);
-        };
-        
-        video.addEventListener('canplay', onCanPlay);
-        video.addEventListener('error', onError);
-        
-        video.play().then(() => {
-          console.log('✅ Video2 playing from start (muted)');
-        }).catch(err => {
-          console.log('❌ Video2 play failed:', err.message);
-          hideVideoLoading();
-        });
-      } else {
-        console.error('❌ Video2 element not found!');
-      }
-    }
-
-    function hideVideo2Background() {
-      console.log('🛑 Hiding video2...');
-      const video = document.getElementById('bg-video2');
-      
-      if (video) {
-        video.pause();
-        video.style.display = 'none';
-      }
-    }
+    // Removed unused video functions to optimize file size
 
     // Unlock audio context on user interaction
     function unlockAudioContext() {
@@ -3279,22 +3122,7 @@ resetTextContainer();
         console.log('🧪 A key pressed - testing audio...');
         testAudio();
       }
-      else if (k==='v'||k==='V'){ 
-        console.log('🧪 V key pressed - testing video...');
-        showVideoBackground();
-      }
-      else if (k==='h'||k==='H'){ 
-        console.log('🧪 H key pressed - hiding video...');
-        hideVideoBackground();
-      }
-      else if (k==='2'||k==='2'){ 
-        console.log('🧪 2 key pressed - testing video2...');
-        showVideo2Background();
-      }
-      else if (k==='j'||k==='J'){ 
-        console.log('🧪 J key pressed - hiding video2...');
-        hideVideo2Background();
-      }
+      // Removed unused video keyboard shortcuts to optimize file size
     });
     
     // Fullscreen functionality
