@@ -293,14 +293,14 @@ font-size: 0.6rem;
         font-size: 0.7rem;
       }
       
-      /* Mobile video sizing - much smaller on mobile */
+      /* Mobile video sizing - full screen on mobile */
       .bg-video {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scaleX(0.85);
-        width: calc(80vw - 1rem);
-        height: calc(50vh - 1rem);
-        object-fit: contain;
+        transform: translate(-50%, -50%);
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
         object-position: center center;
       }
       
@@ -1149,9 +1149,11 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       const loadingEl = document.getElementById('video-loading');
       const progressEl = document.querySelector('.loading-progress');
       
-      if (loadingEl && progressEl) {
+      if (loadingEl) {
         // Complete the progress bar
-        progressEl.style.width = '100%';
+        if (progressEl) {
+          progressEl.style.width = '100%';
+        }
         
         // Clear progress animation
         const intervalId = loadingEl.dataset.progressInterval;
@@ -1160,10 +1162,19 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
           delete loadingEl.dataset.progressInterval;
         }
         
-        // Hide after a brief delay
+        // Force hide immediately and with fallback
+        loadingEl.style.display = 'none';
+        loadingEl.style.visibility = 'hidden';
+        loadingEl.style.opacity = '0';
+        
+        // Additional fallback for mobile
         setTimeout(() => {
-          loadingEl.style.display = 'none';
-        }, 500);
+          if (loadingEl) {
+            loadingEl.style.display = 'none';
+            loadingEl.style.visibility = 'hidden';
+            loadingEl.style.opacity = '0';
+          }
+        }, 100);
       }
     }
 
@@ -1238,27 +1249,41 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       }
     }
     
-    // Enhanced audio context initialization with debugging
+    // Enhanced audio context initialization with mobile support
     function initAudioContext() {
       if (debugMode) console.log('🔊 Initializing audio context...');
       
       if (!audioContext) {
         try {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          // Use the most compatible audio context for mobile
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+          audioContext = new AudioContextClass();
           console.log('✅ Audio context created successfully:', audioContext.state);
           
-          // Resume audio context if suspended (required by Chrome)
+          // Resume audio context if suspended (required by mobile browsers)
           if (audioContext.state === 'suspended') {
             audioContext.resume().then(() => {
               console.log('✅ Audio context resumed from suspended state');
+              audioEnabled = true;
             }).catch(err => {
               console.error('❌ Failed to resume audio context:', err);
+              // Try to enable audio anyway for mobile
+              audioEnabled = true;
             });
+          } else {
+            audioEnabled = true;
           }
+          
+          // Mobile-specific audio context handling
+          if (audioContext.state === 'running') {
+            audioEnabled = true;
+          }
+          
         } catch (e) {
           console.error('❌ Audio context creation failed:', e);
-          audioEnabled = false;
-          showAudioError('Audio not supported in this browser');
+          // Don't disable audio completely on mobile - try to continue
+          audioEnabled = true;
+          showAudioError('Audio context failed, but continuing...');
         }
       }
       return audioContext !== null;
@@ -3313,6 +3338,13 @@ if (e.key==='1'||e.key==='2'||e.key==='3'){ colorIndex=parseInt(e.key,10)-1; app
     window.onload = () => {
       // Start presentation immediately when DOM is loaded
       startPage(0);
+      
+      // Initialize audio context for mobile on first load
+      if (window.innerWidth <= 768) {
+        console.log('📱 Mobile device detected - initializing audio...');
+        initAudioContext();
+        audioEnabled = true;
+      }
       
       // Mute all audio by default
       document.addEventListener('keydown', (e) => {
