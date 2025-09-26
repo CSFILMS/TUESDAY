@@ -9,10 +9,10 @@
     .bg-video {
       position: fixed;
       top: 50%;
-      left: 50%;
+      left: 60%;
       transform: translate(-50%, -50%) scaleX(0.8);
-      width: calc(30vw - 2rem);
-      height: calc(36vh - 2rem);
+      width: calc(50vw - 2rem);
+      height: calc(60vh - 2rem);
       object-fit: cover;
       object-position: center center;
       z-index: -1;
@@ -99,20 +99,20 @@
         opacity: 1;
       }
       92% { 
-        transform: translate(-49%, -50%) scaleX(0.8);
-        opacity: 0.8;
+        transform: translate(-50.1%, -50%) scaleX(0.8);
+        opacity: 0.95;
       }
       94% { 
-        transform: translate(-51%, -49%) scaleX(0.8);
-        opacity: 0.9;
+        transform: translate(-49.9%, -50.05%) scaleX(0.8);
+        opacity: 0.98;
       }
       96% { 
-        transform: translate(-50%, -51%) scaleX(0.8);
-        opacity: 0.7;
+        transform: translate(-50.05%, -49.95%) scaleX(0.8);
+        opacity: 0.96;
       }
       98% { 
-        transform: translate(-49%, -50%) scaleX(0.8);
-        opacity: 0.95;
+        transform: translate(-49.95%, -50%) scaleX(0.8);
+        opacity: 0.97;
       }
     }
     
@@ -195,7 +195,7 @@
       background:var(--bg); 
       color:var(--fg); 
       font-family:var(--font-family);
-      padding:5vw;
+      padding:5vw; 
       perspective: 1000px; 
       padding-left: 25vw;
       max-width:80vw; 
@@ -425,7 +425,7 @@ z-index: 1;
     /* Video loading status */
     #video-loading {
       position: fixed;
-      top: 50%;
+      top: calc(100vh - 8rem);
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 10001;
@@ -435,28 +435,28 @@ z-index: 1;
     
     .loading-text {
       font-family: var(--font-family);
-      font-size: 0.8rem;
-      color: var(--accent);
-      text-shadow: 0 0 2px var(--accent), 0 0 12px var(--accent);
-      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: var(--soft);
+      text-shadow: 0 0 2px var(--soft), 0 0 12px var(--soft);
+      margin-bottom: 1.5rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
     
     .loading-bar {
-      width: 200px;
-      height: 2px;
-      background: rgba(0, 255, 0, 0.2);
-      border: 1px solid var(--accent);
-      border-radius: 1px;
+      width: 300px;
+      height: 4px;
+      background: rgba(102, 255, 102, 0.2);
+      border: 1px solid var(--soft);
+      border-radius: 2px;
       overflow: hidden;
       position: relative;
     }
     
     .loading-progress {
       height: 100%;
-      background: var(--accent);
-      box-shadow: 0 0 4px var(--accent);
+      background: var(--soft);
+      box-shadow: 0 0 4px var(--soft);
       width: 0%;
       transition: width 0.3s ease;
       animation: loadingPulse 1.5s ease-in-out infinite;
@@ -465,22 +465,22 @@ z-index: 1;
     @keyframes loadingPulse {
       0%, 100% { 
         opacity: 0.6;
-        box-shadow: 0 0 4px var(--accent);
+        box-shadow: 0 0 4px var(--soft);
       }
       50% { 
         opacity: 1;
-        box-shadow: 0 0 8px var(--accent), 0 0 16px var(--accent);
+        box-shadow: 0 0 8px var(--soft), 0 0 16px var(--soft);
       }
     }
     
     /* Mobile loading status */
     @media (max-width: 768px) {
       .loading-text {
-        font-size: 0.6rem;
+        font-size: 1rem;
       }
       .loading-bar {
-        width: 150px;
-        height: 1.5px;
+        width: 250px;
+        height: 3px;
       }
     }
     
@@ -662,6 +662,50 @@ z-index: 2 !important;
       font-weight: bold;
       text-shadow: 0 0 10px var(--accent);
     }
+    
+    /* Video loading text - simple like slide text */
+    #video-loading {
+      position: fixed;
+      top: 50%;
+      left: 60%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      font-family: var(--font-family);
+      color: var(--accent);
+      font-size: 1.2rem;
+      text-align: center;
+    }
+    
+    .loading-text {
+      margin-bottom: 1rem;
+    }
+    
+    .loading-dots {
+      display: inline-block;
+    }
+    
+    .loading-dots span {
+      animation: loadingDots 1.5s infinite;
+      animation-fill-mode: both;
+    }
+    
+    .loading-dots span:nth-child(1) { animation-delay: 0s; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes loadingDots {
+      0%, 20% { opacity: 0; }
+      50% { opacity: 1; }
+      80%, 100% { opacity: 0; }
+    }
+    
+    .loading-bar {
+      display: none;
+    }
+    
+    .loading-progress {
+      display: none;
+    }
      
 
   </style>
@@ -755,7 +799,7 @@ z-index: 2 !important;
 
   <!-- Video loading status -->
   <div id="video-loading" style="display: none;">
-    <div class="loading-text">LOADING VIDEO</div>
+    <div class="loading-text">LOADING VIDEO<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
     <div class="loading-bar">
       <div class="loading-progress"></div>
     </div>
@@ -2348,7 +2392,7 @@ height: 100%;
     // Function to decode individual timeline lines with scrambling effect
     function decodeTimelineLine(element, baseContent, lineText, onComplete) {
       let index = 0;
-      const chunkSize = 6; // Small chunks for line-by-line
+      const chunkSize = 15; // Larger chunks for much faster decoding
       const len = lineText.length;
       let scrambled = lineText.split('');
       
@@ -2383,7 +2427,7 @@ height: 100%;
           element.textContent = baseContent + lineText; // Final clean text
           onComplete && onComplete();
         }
-      }, 60); // Fast decode for individual lines
+      }, 20); // Much faster decode for individual lines
     }
     
     function scrambleFastChunks(element, text, onComplete) {
@@ -2442,7 +2486,7 @@ if ((index*chunkSize)>=len){
     const filmByText = text.split('\n\n6BDM:')[0];
     element.textContent = filmByText;
     
-    // After 2 seconds, decode the subtitle
+    // After 18 seconds, decode the subtitle
     const subtitleTimeout = setTimeout(() => {
       // Check if we should still continue (page might have changed)
       if (!shouldContinueTyping) {
@@ -2450,7 +2494,7 @@ if ((index*chunkSize)>=len){
         return;
       }
       
-      console.log('Starting 6BDM subtitle decode after 2 second delay');
+      console.log('Starting 6BDM subtitle decode after 18 second delay');
       
       // Extract the 6BDM part
       const subtitleText = '\n\n6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH';
@@ -2464,7 +2508,7 @@ if ((index*chunkSize)>=len){
         }, 1000); // Brief pause before continuing
         filmByTimeouts.push(continueTimeout);
       });
-    }, 2000); // 2 second delay for subtitle
+    }, 20000); // 20 second delay for subtitle
     filmByTimeouts.push(subtitleTimeout);
   } else if (text.includes('A FILM BY EUGENE JARECKI')) {
     console.log('A FILM BY detected - adding 5 second delay before continuing...');
@@ -2477,6 +2521,54 @@ if ((index*chunkSize)>=len){
   }
 }
       },100);
+    }
+
+    // Ultra-fast scrambling specifically for 2006 text - much faster interval
+    function scrambleUltraFastChunks(element, text, onComplete) {
+      if (currentInterval) {
+        clearInterval(currentInterval);
+        currentInterval = null;
+      }
+      
+      let index = 0, chunkSize = 15, scrambled = text.split(''), len = text.length;
+      for (let i=0;i<len;i++) scrambled[i] = /\s/.test(text[i]) ? text[i] : chars[Math.floor(Math.random()*chars.length)];
+      isAnimating = true; promptElem.style.visibility='hidden'; navMsg.style.visibility='hidden';
+
+      // Calculate total chunks for audio sync
+      const totalChunks = Math.ceil(len / chunkSize);
+      
+      // Initialize audio context on first user interaction
+      initAudioContext();
+
+      currentInterval = setInterval(() => {
+        const display = scrambled.slice();
+        for (let i=0;i<index;i++){
+          let s=i*chunkSize, e=Math.min(s+chunkSize,len);
+          for (let j=s;j<e;j++) display[j]=text[j];
+        }
+        for (let k=index*chunkSize;k<len;k++) display[k] = /\s/.test(text[k]) ? text[k] : chars[Math.floor(Math.random()*chars.length)];
+        element.textContent = display.join('');
+
+        // Play synchronized beep for this chunk
+        playDecodingBeeps(index, totalChunks);
+
+        index++;
+        if ((index*chunkSize)>=len){
+          clearInterval(currentInterval);
+          currentInterval = null;
+          truncateTextToFit(element, text);
+          isAnimating=false;
+          
+          // Only show "PRESS SPACEBAR TO CONTINUE" for first 2 pages
+          if (currentPage < 2) {
+            navMsg.innerHTML='PRESS SPACEBAR<br>TO CONTINUE';
+            navMsg.style.fontSize = '0.9rem';
+            navMsg.style.visibility='visible';
+          }
+          
+          onComplete && onComplete();
+        }
+      }, 25); // Ultra-fast: 25ms interval instead of 100ms (4x faster)
     }
 
     /* ================== TIMELINE YEAR-BY-YEAR REVEAL ================== */
@@ -2553,8 +2645,8 @@ if ((index*chunkSize)>=len){
         
         
         if (timelineRevealState.currentIndex === 0) {
-          // First section: decode with scrambling animation
-          scrambleFastChunks(timelineRevealState.element, currentSection, () => {
+          // First section (2006): decode with ultra-fast scrambling animation
+          scrambleUltraFastChunks(timelineRevealState.element, currentSection, () => {
             timelineRevealState.currentIndex++;
             // Show navigation message for next section
             if (timelineRevealState.currentIndex < timelineRevealState.sections.length) {
@@ -2797,15 +2889,15 @@ if ((index*chunkSize)>=len){
          // Check if this is the Collateral Murder video slide
          const isCollateralMurderSlide = pages[pageIndex].includes('It published the infamous Collateral Murder video in 2010');
          
-        if (isTimelineContent) {
+         if (isTimelineContent) {
           // For timeline content, use year-by-year reveal system
           console.log('Timeline content detected, starting year-by-year reveal');
           
           // Use the new year-by-year timeline reveal
           revealTimelineYearByYear(el, pages[pageIndex], () => {
-            // Timeline reveal complete
+             // Timeline reveal complete
             console.log('Timeline year-by-year reveal completed');
-          });
+           });
          } else {
            // Skip overflow checking for page 0 to speed up initial load
            if (pageIndex !== 0 && checkTextOverflow(el, pages[pageIndex])) {
@@ -2845,8 +2937,8 @@ if ((index*chunkSize)>=len){
                  }, 3000);
                }, 1000);
              }
-           } else {
-             scrambleFastChunks(el, pages[pageIndex], () => {
+         } else {
+           scrambleFastChunks(el, pages[pageIndex], () => {
            // Text displayed
            if (isCollateralMurderSlide) {
              console.log('Collateral Murder slide detected, starting animation...');
