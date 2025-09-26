@@ -504,20 +504,35 @@ z-index: 1;
          overflow: hidden; /* Prevent text from overflowing */
        }
        
+       /* Force all text to wrap on mobile - override everything */
+       #unscramble {
+         white-space: pre-wrap !important;
+         word-wrap: break-word !important;
+         overflow-wrap: break-word !important;
+         word-break: break-word !important;
+         max-width: 100% !important;
+         width: 100% !important;
+         hyphens: auto !important;
+       }
+       
        /* Ensure timeline text maintains its smaller size on mobile */
        #unscramble[data-timeline="true"] {
          font-size: 0.6rem !important;
-         max-width: 100%; /* Prevent horizontal overflow */
+         max-width: 100% !important; /* Prevent horizontal overflow */
          word-wrap: break-word !important;
          overflow-wrap: break-word !important;
+         white-space: pre-wrap !important; /* Allow wrapping while preserving line breaks */
+         word-break: break-word !important; /* Force breaking of long words */
        }
        
        /* Normal text gets bigger on mobile */
        #unscramble:not([data-timeline="true"]) {
          font-size: 1.1rem !important;
-         max-width: 100%; /* Prevent horizontal overflow */
+         max-width: 100% !important; /* Prevent horizontal overflow */
          word-wrap: break-word !important;
          overflow-wrap: break-word !important;
+         white-space: pre-wrap !important; /* Allow wrapping while preserving line breaks */
+         word-break: break-word !important; /* Force breaking of long words */
        }
      }
                     #unscramble { 
@@ -649,6 +664,9 @@ z-index: 2 !important;
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         max-width: 100% !important;
+        white-space: pre-wrap !important;
+        word-break: break-word !important;
+        hyphens: auto !important; /* Allow hyphenation on mobile */
       }
     }
     
