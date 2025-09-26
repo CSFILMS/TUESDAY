@@ -293,14 +293,14 @@ font-size: 0.6rem;
         font-size: 0.7rem;
       }
       
-      /* Mobile video sizing - full screen on mobile */
+      /* Mobile video sizing - smaller on mobile */
       .bg-video {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover;
+        width: 60vw;
+        height: 40vh;
+        object-fit: contain;
         object-position: center center;
       }
       
@@ -1028,10 +1028,11 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       const audio = document.getElementById('obiwan-audio');
       
       if (video) {
-        // Show loading status
+        // Show loading status first
         showVideoLoading();
         
-        video.style.display = 'block';
+        // Keep video hidden initially
+        video.style.display = 'none';
         video.muted = true;   // Keep video muted
         video.loop = true;    // Video loops visually
         video.currentTime = 0;
@@ -1039,7 +1040,12 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
         // Set up video event listeners
         const onCanPlay = () => {
           console.log('✅ Video3 ready to play');
+          // Hide loading first, then show video after a brief delay
           hideVideoLoading();
+          setTimeout(() => {
+            video.style.display = 'block';
+            console.log('✅ Video3 now visible');
+          }, 200); // 200ms delay to ensure loading bar disappears first
           video.removeEventListener('canplay', onCanPlay);
           video.removeEventListener('error', onError);
         };
