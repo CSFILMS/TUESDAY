@@ -298,8 +298,8 @@ font-size: 0.6rem;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%) scaleX(0.85);
-        width: calc(60vw - 1rem);
-        height: calc(40vh - 1rem);
+        width: calc(80vw - 1rem);
+        height: calc(50vh - 1rem);
         object-fit: contain;
         object-position: center center;
       }
@@ -723,7 +723,7 @@ z-index: 2 !important;
     defaultMuted
     style="display: none;"
   >
-    <source src="obiwan_perspective.mp4" type="video/mp4" />
+    <source src="OBIWAN_REAL.mp4" type="video/mp4" />
   </video>
   
   <audio
@@ -731,7 +731,7 @@ z-index: 2 !important;
     preload="metadata"
     style="display: none;"
   >
-    <source src="obiwan_perspective.mp4" type="audio/mp4" />
+    <source src="OBIWAN_REAL.mp4" type="audio/mp4" />
   </audio>
 
   <div class="bg-overlay" id="bg-overlay" style="display: none;"></div>
@@ -2807,8 +2807,8 @@ if ((index*chunkSize)>=len){
             console.log('Timeline year-by-year reveal completed');
           });
          } else {
-           // Check for overflow BEFORE starting animation
-           if (checkTextOverflow(el, pages[pageIndex])) {
+           // Skip overflow checking for page 0 to speed up initial load
+           if (pageIndex !== 0 && checkTextOverflow(el, pages[pageIndex])) {
              
              // Split the content first
              const splitSlides = splitOverflowingText(pages[pageIndex]);
@@ -2829,7 +2829,24 @@ if ((index*chunkSize)>=len){
              }
            }
            
-           scrambleFastChunks(el, pages[pageIndex], () => {
+           // Use faster scrambling for page 0
+           if (pageIndex === 0) {
+             // Instant display for page 0 to speed up initial load
+             el.textContent = pages[pageIndex];
+             // Call the callback immediately
+             if (isCollateralMurderSlide) {
+               console.log('Collateral Murder slide detected, starting animation...');
+               setTimeout(() => {
+                 el.classList.add('collateral-murder-slide');
+                 console.log('Animation class added');
+                 setTimeout(() => {
+                   createPersistentText();
+                   console.log('Persistent text created');
+                 }, 3000);
+               }, 1000);
+             }
+           } else {
+             scrambleFastChunks(el, pages[pageIndex], () => {
            // Text displayed
            if (isCollateralMurderSlide) {
              console.log('Collateral Murder slide detected, starting animation...');
@@ -2846,6 +2863,7 @@ if ((index*chunkSize)>=len){
              }, 1000); // Wait 1 second after text is displayed
            }
          });
+           }
          }
        }
        
