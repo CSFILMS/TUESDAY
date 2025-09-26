@@ -496,29 +496,20 @@ z-index: 1;
      /* Mobile-specific text-wrap overrides */
      @media (max-width: 768px) {
        #text-wrap {
-         margin: 1rem 0.5rem 0 0.5rem;
-         height: calc(100% - 2rem);
-         padding: 0.5rem;
-         width: calc(100% - 1rem);
-         box-sizing: border-box;
+         margin-top: 0; /* Remove negative margin on mobile */
+         height: calc(100% - 1rem); /* Better height calculation for mobile */
+         margin-left: 1rem;
+         margin-right: 1rem;
+         width: calc(100% - 2rem);
        }
        
-       /* Force text to wrap at screen edge */
        #unscramble {
-         white-space: normal !important;
-         word-wrap: break-word !important;
-         overflow-wrap: break-word !important;
-         word-break: break-word !important;
-         max-width: 100% !important;
-       }
-       
-       /* Make text bigger on mobile but keep timeline text small */
-       #unscramble:not([data-timeline="true"]) {
-         font-size: 1rem !important;
-       }
-       
-       #unscramble[data-timeline="true"] {
-         font-size: 0.6rem !important;
+         white-space: pre-wrap;
+         word-wrap: break-word;
+         overflow-wrap: break-word;
+         word-break: break-word;
+         max-width: 100%;
+         font-size: 1rem;
        }
      }
                     #unscramble { 
@@ -2876,8 +2867,8 @@ if ((index*chunkSize)>=len){
           el.style.lineHeight = '1.5';
           
         } else {
-          // Normal text size - bigger on mobile for better readability
-        el.style.fontSize = isMobile ? '1rem' : '1.2rem';
+          // Normal text size
+        el.style.fontSize = isMobile ? '0.8rem' : '1.2rem';
           
           // Remove timeline marker
           el.removeAttribute('data-timeline');
