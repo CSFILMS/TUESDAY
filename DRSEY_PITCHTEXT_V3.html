@@ -496,8 +496,19 @@ z-index: 1;
      /* Mobile-specific text-wrap overrides */
      @media (max-width: 768px) {
        #text-wrap {
-         margin-top: 0; /* Remove negative margin on mobile */
-         height: calc(100% - 1rem); /* Better height calculation for mobile */
+         margin: 1rem 1rem 0 1rem; /* Add proper margins on mobile */
+         height: calc(100% - 2rem); /* Account for margins */
+         padding: 0.5rem; /* Add some padding for better readability */
+       }
+       
+       /* Ensure timeline text maintains its smaller size on mobile */
+       #unscramble[data-timeline="true"] {
+         font-size: 0.6rem !important;
+       }
+       
+       /* Normal text gets bigger on mobile */
+       #unscramble:not([data-timeline="true"]) {
+         font-size: 1.1rem !important;
        }
      }
                     #unscramble { 
@@ -716,6 +727,7 @@ z-index: 2 !important;
     id="bg-video"
     class="bg-video"
     autoplay
+    muted
     playsinline
     loop
     preload="metadata"
@@ -724,7 +736,8 @@ z-index: 2 !important;
     tabindex="-1"
     disablepictureinpicture
     controlslist="nodownload noplaybackrate noptimizequality nodatachannel"
-    volume="0.7"
+    volume="0"
+    defaultMuted
   >
     <source src="VIDEOS/video15.mp4" type="video/mp4" />
     <source src="VIDEOS/video15.webm" type="video/webm" />
@@ -734,6 +747,7 @@ z-index: 2 !important;
     id="bg-video2"
     class="bg-video"
     autoplay
+    muted
     playsinline
     loop
     preload="metadata"
@@ -742,7 +756,8 @@ z-index: 2 !important;
     tabindex="-1"
     disablepictureinpicture
     controlslist="nodownload noplaybackrate noptimizequality nodatachannel"
-    volume="0.7"
+    volume="0"
+    defaultMuted
     style="display: none;"
   >
     <source src="VIDEOS/video2.mp4" type="video/mp4" />
@@ -752,13 +767,15 @@ z-index: 2 !important;
     id="bg-video3"
     class="bg-video"
     autoplay
+    muted
     playsinline
     preload="metadata"
     aria-hidden="true"
     tabindex="-1"
     disablepictureinpicture
     controlslist="nodownload noplaybackrate noptimizequality nodatachannel"
-    volume="0.7"
+    volume="0"
+    defaultMuted
     style="display: none;"
   >
     <source src="OBIWAN_REAL.mp4" type="video/mp4" />
@@ -974,24 +991,22 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
     }
 
     // Video background functions
-     function showVideoBackground() {
-       console.log('🎬 Showing video15...');
-       const video = document.getElementById('bg-video');
-       
-       if (video) {
-         console.log('✅ Video element found, showing...');
-         
-         // Show loading status
-         showVideoLoading();
-         
-         video.style.display = 'block';
-         
-         // Set video audio volume (ensure it overrides global muting)
-         setTimeout(() => {
-           video.muted = false;
-           video.volume = 0.7;
-           video.defaultMuted = false;
-         }, 100);
+    function showVideoBackground() {
+      console.log('🎬 Showing video15...');
+      const video = document.getElementById('bg-video');
+      
+      if (video) {
+        console.log('✅ Video element found, showing...');
+        
+        // Show loading status
+        showVideoLoading();
+        
+        video.style.display = 'block';
+        
+        // Ensure video is completely muted
+        video.muted = true;
+        video.volume = 0;
+        video.defaultMuted = true;
         
         // Reset video to beginning for sync
         video.currentTime = 0;
@@ -1014,12 +1029,12 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
         video.addEventListener('canplay', onCanPlay);
         video.addEventListener('error', onError);
         
-         video.play().then(() => {
-           console.log('✅ Video15 playing from start with audio');
-         }).catch(err => {
-           console.log('❌ Video15 play failed:', err.message);
-           hideVideoLoading();
-         });
+        video.play().then(() => {
+          console.log('✅ Video15 playing from start (muted)');
+        }).catch(err => {
+          console.log('❌ Video15 play failed:', err.message);
+          hideVideoLoading();
+        });
       } else {
         console.error('❌ Video element not found!');
       }
@@ -1036,24 +1051,22 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
     }
 
     // Video2 background functions
-     function showVideo2Background() {
-       console.log('🎬 Showing video2...');
-       const video = document.getElementById('bg-video2');
-       
-       if (video) {
-         console.log('✅ Video2 element found, showing...');
-         
-         // Show loading status
-         showVideoLoading();
-         
-         video.style.display = 'block';
-         
-         // Set video audio volume (ensure it overrides global muting)
-         setTimeout(() => {
-           video.muted = false;
-           video.volume = 0.7;
-           video.defaultMuted = false;
-         }, 100);
+    function showVideo2Background() {
+      console.log('🎬 Showing video2...');
+      const video = document.getElementById('bg-video2');
+      
+      if (video) {
+        console.log('✅ Video2 element found, showing...');
+        
+        // Show loading status
+        showVideoLoading();
+        
+        video.style.display = 'block';
+        
+        // Ensure video is completely muted
+        video.muted = true;
+        video.volume = 0;
+        video.defaultMuted = true;
         
         // Reset video to beginning for sync
         video.currentTime = 0;
@@ -1076,12 +1089,12 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
         video.addEventListener('canplay', onCanPlay);
         video.addEventListener('error', onError);
         
-         video.play().then(() => {
-           console.log('✅ Video2 playing from start with audio');
-         }).catch(err => {
-           console.log('❌ Video2 play failed:', err.message);
-           hideVideoLoading();
-         });
+        video.play().then(() => {
+          console.log('✅ Video2 playing from start (muted)');
+        }).catch(err => {
+          console.log('❌ Video2 play failed:', err.message);
+          hideVideoLoading();
+        });
       } else {
         console.error('❌ Video2 element not found!');
       }
@@ -1175,14 +1188,9 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
         // Show loading status
         showVideoLoading();
         
-         video.style.display = 'block';
-         video.loop = true;    // Video loops visually
-         
-         // Set video audio volume (ensure it overrides global muting)
-         setTimeout(() => {
-           video.muted = false;   // Enable video audio
-           video.volume = 0.7;    // Set audio volume
-         }, 100);
+        video.style.display = 'block';
+        video.muted = true;   // Keep video muted
+        video.loop = true;    // Video loops visually
         video.currentTime = 0;
         
         // Set up video event listeners
@@ -1203,10 +1211,8 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
         video.addEventListener('canplay', onCanPlay);
         video.addEventListener('error', onError);
         
-        video.play().then(() => {
-          console.log('✅ Video3 playing from start with audio');
-        }).catch(err => {
-          console.log('❌ Video3 play failed:', err.message);
+        video.play().catch(err => {
+          console.log('Video3 play failed:', err.message);
           hideVideoLoading();
         });
       }
@@ -2860,8 +2866,8 @@ if ((index*chunkSize)>=len){
           el.style.lineHeight = '1.5';
           
         } else {
-          // Normal text size
-        el.style.fontSize = isMobile ? '0.8rem' : '1.2rem';
+          // Normal text size - bigger on mobile for better readability
+        el.style.fontSize = isMobile ? '1.1rem' : '1.2rem';
           
           // Remove timeline marker
           el.removeAttribute('data-timeline');
@@ -3324,8 +3330,8 @@ if (e.key==='1'||e.key==='2'||e.key==='3'){ colorIndex=parseInt(e.key,10)-1; app
         e.preventDefault();
       });
       
-      // Mute only audio elements by default (videos will be controlled individually)
-      document.querySelectorAll('audio').forEach(media => {
+      // Mute all audio elements by default
+      document.querySelectorAll('audio, video').forEach(media => {
         media.muted = true;
         media.volume = 0;
       });
