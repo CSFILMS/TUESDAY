@@ -1389,7 +1389,7 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
 
     /* ================== PREP ================== */
     const fullText = fullTextRaw.toUpperCase();
-    const pages = fullText.split(/\n{4,}/);
+    const pages = fullText.split(/\n{4,}/).filter(page => page.trim().length > 0);
     console.log('📄 Total pages created:', pages.length);
     console.log('📄 Pages:', pages.map((p, i) => `Page ${i + 1}: ${p.substring(0, 50)}...`));
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,\'"?!-—:;\n';
