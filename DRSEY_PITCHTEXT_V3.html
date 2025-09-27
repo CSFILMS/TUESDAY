@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Unscramble + Images</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
     /* Background video */
     .bg-video {
@@ -263,7 +263,7 @@ transparent 4px
         overflow-x: hidden !important;
       }
       #page {
-        padding: 1vh 3vw; /* Increased horizontal padding for better text spacing */
+        padding: 1vh 2vw; /* Reduced horizontal padding */
         height: 70vh; /* Increased height for mobile */
         min-height: 25em;
         width: 100% !important;
@@ -279,7 +279,7 @@ transparent 4px
         max-width: 100% !important;
         margin-top: 0; /* Remove negative margin that was causing issues */
         height: calc(100% - 1rem); /* Adjust height calculation */
-        padding: 0 2vw !important; /* Increased padding for better text spacing */
+        padding: 1rem 1vw !important; /* Reduced padding to prevent overflow */
         box-sizing: border-box !important;
         overflow-x: hidden !important;
       }
@@ -295,6 +295,8 @@ transparent 4px
         overflow-wrap: break-word !important;
         white-space: pre-wrap !important;
         overflow-x: hidden !important;
+        word-break: break-word !important; /* Force word breaking on mobile */
+        hyphens: auto !important; /* Enable hyphenation on mobile */
       }
       #nav {
 font-size: 0.9rem;
@@ -329,7 +331,7 @@ font-size: 0.6rem;
         max-width: 100% !important;
         position: relative !important;
         z-index: 2 !important;
-        padding: 0 2vw !important; /* Increased padding to match main text-wrap */
+        padding: 1rem 1vw !important; /* Reduced padding to match main text-wrap */
         box-sizing: border-box !important;
         overflow-x: hidden !important;
       }
@@ -345,6 +347,20 @@ font-size: 0.6rem;
         overflow-wrap: break-word !important;
         white-space: pre-wrap !important;
         overflow-x: hidden !important;
+        word-break: break-word !important; /* Force word breaking on mobile */
+        hyphens: auto !important; /* Enable hyphenation on mobile */
+      }
+      
+      /* Additional mobile constraints to prevent overflow */
+      * {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      
+      /* Ensure no element can cause horizontal overflow */
+      html, body, #page, #text-wrap, #unscramble {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
       }
     }
     
@@ -521,8 +537,7 @@ z-index: 1;
        box-sizing: border-box;
        overflow: hidden;
        max-width: 100vw;
-       padding: 2rem;
-       padding-bottom: 6rem;
+       padding: 2rem 2rem 6rem 4rem;
      }
      
      /* Mobile-specific text-wrap overrides */
@@ -629,6 +644,8 @@ z-index: 2 !important;
       overflow-wrap: normal !important;
       hyphens: none !important;
       text-indent: 0 !important;
+      padding-left: 2rem !important;
+      padding-right: 2rem !important;
     }
     
     #text-wrap.small-side-mode #unscramble {
@@ -642,6 +659,8 @@ z-index: 2 !important;
       text-indent: 0 !important;
       font-size: 1.0rem !important;
       line-height: 1.3 !important;
+      padding-left: 2rem !important;
+      padding-right: 2rem !important;
     }
     
     /* Prevent any formatting interference with timeline content */
@@ -655,6 +674,8 @@ z-index: 2 !important;
       line-height: 1.5 !important;
       letter-spacing: 0.05em !important;
       word-spacing: normal !important;
+      padding-left: 2rem !important;
+      padding-right: 2rem !important;
     }
     
     /* Collateral Murder video slide animation */
@@ -662,6 +683,14 @@ z-index: 2 !important;
       animation: moveUpwards 3s ease-out forwards;
       position: relative;
       z-index: 10;
+      padding-left: 2rem !important;
+      padding-right: 2rem !important;
+    }
+    
+    /* Ensure all unscramble elements have padding */
+    #unscramble {
+      padding-left: 2rem !important;
+      padding-right: 2rem !important;
     }
     
     @keyframes moveUpwards {
@@ -865,9 +894,8 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
 
     /* ================== AUDIO SYSTEM ================== */
     let audioContext = null;
-    let audioEnabled = false;
+    let audioEnabled = true; // Enable audio by default
     let debugMode = true;
-    let currentSoundVariation = 0; // 0-4 for 5 different variations
     let currentAudio = null; // Track currently playing audio
     let audioVolume = 0.7; // Default volume level
     
@@ -1082,6 +1110,15 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       if (!audioContextUnlocked) {
         console.log('🔓 Unlocking audio context...');
         
+        // Enable audio if not already enabled
+        if (!audioEnabled) {
+          audioEnabled = true;
+          console.log('🔊 Audio enabled on first interaction');
+        }
+        
+        // Initialize audio context first
+        initAudioContext();
+        
         // Create a silent audio to unlock the context
         const audio = document.getElementById('obiwan-audio');
         if (audio) {
@@ -1094,7 +1131,26 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
             console.log('✅ Audio context unlocked');
           }).catch(err => {
             console.log('❌ Audio unlock failed:', err.message);
+            // Fallback: try to unlock with Web Audio API
+            if (audioContext && audioContext.state === 'suspended') {
+              audioContext.resume().then(() => {
+                audioContextUnlocked = true;
+                console.log('✅ Audio context unlocked via resume');
+              }).catch(resumeErr => {
+                console.log('❌ Audio context resume failed:', resumeErr.message);
+              });
+            }
           });
+        } else {
+          // Fallback: try to unlock with Web Audio API only
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+              audioContextUnlocked = true;
+              console.log('✅ Audio context unlocked via resume (no audio element)');
+            }).catch(resumeErr => {
+              console.log('❌ Audio context resume failed:', resumeErr.message);
+            });
+          }
         }
       }
     }
@@ -1211,256 +1267,11 @@ TO PROMOTE THIS TO A GLOBAL AUDIENCE, WE SEEK TO RAISE A P&A ARSENAL FROM WITHIN
       }
     }
     
-    // Enhanced beep function with multiple fallback methods
-    function playBeep(frequency = 800, duration = 0.08, volume = 0.5) {
-      if (!audioEnabled) {
-        if (debugMode) console.log('🔇 Audio disabled, skipping beep');
-        return;
-      }
-      
-      if (!audioContext && !initAudioContext()) {
-        if (debugMode) console.error('❌ No audio context available');
-        return;
-      }
-      
-      try {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        // Use sine wave for better compatibility
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-        
-        // Envelope for smooth attack/decay
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
-        
-        if (debugMode) console.log('✅ Beep scheduled successfully');
-        
-      } catch (e) {
-        console.error('❌ Beep playback failed:', e);
-        showAudioError('Playback failed');
-      }
-    }
     
-    // Test beep with camera shutter burst
-    function testBeep() {
-      console.log('🧪 Testing camera shutter audio...');
-      
-      // Show visual feedback
-      const navMsg = document.getElementById('nav-msg');
-      if (navMsg) {
-        navMsg.textContent = 'TESTING SHUTTER BEEPS...';
-        navMsg.style.visibility = 'visible';
-        navMsg.style.color = '#FFFF00';
-      }
-      
-      // Initialize audio if needed
-      if (!initAudioContext()) {
-        console.error('❌ Test failed: Could not initialize audio');
-        return;
-      }
-      
-      // Play rapid shutter-like test sequence
-      const frequency = 1200;
-      const volume = 0.4;
-      const beepDuration = 0.025;
-      const rapidBeeps = 8; // More beeps for testing
-      
-      for (let i = 0; i < rapidBeeps; i++) {
-        setTimeout(() => {
-          playBeep(frequency, beepDuration, volume);
-        }, i * 12); // Very rapid - 12ms between beeps
-      }
-      
-      // Restore UI after test
-      setTimeout(() => {
-        if (navMsg) {
-          navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
-          navMsg.style.fontSize = '0.9rem';
-          navMsg.style.color = '';
-        }
-      }, 1000);
-    }
     
-    // 5 Different shutter sound variations
-    const soundVariations = [
-      {
-        name: "Classic Shutter",
-        frequency: 1200,
-        beepsPerChunk: 4,
-        timeBetweenBeeps: 10,
-        beepDuration: 0.025,
-        volume: 0.15
-      },
-      {
-        name: "Deep Mechanical",
-        frequency: 800,
-        beepsPerChunk: 3,
-        timeBetweenBeeps: 15,
-        beepDuration: 0.035,
-        volume: 0.18
-      },
-      {
-        name: "High Frequency Burst",
-        frequency: 1600,
-        beepsPerChunk: 6,
-        timeBetweenBeeps: 8,
-        beepDuration: 0.020,
-        volume: 0.12
-      },
-      {
-        name: "Stutter Pattern",
-        frequency: 1000,
-        beepsPerChunk: 5,
-        timeBetweenBeeps: [5, 5, 20, 5, 5], // Variable timing for stutter effect
-        beepDuration: 0.030,
-        volume: 0.16
-      },
-      {
-        name: "Dual Tone",
-        frequency: [1400, 1100], // Two alternating frequencies
-        beepsPerChunk: 4,
-        timeBetweenBeeps: 12,
-        beepDuration: 0.025,
-        volume: 0.14
-      }
-    ];
     
-    // Rapid camera shutter-like beeps with variations
-    function playDecodingBeeps(chunkIndex, totalChunks) {
-      if (!audioEnabled) return;
-      
-      const variation = soundVariations[currentSoundVariation];
-      
-      for (let i = 0; i < variation.beepsPerChunk; i++) {
-        setTimeout(() => {
-          let freq = variation.frequency;
-          let vol = variation.volume;
-          
-          // Handle special variations
-          if (currentSoundVariation === 3) { // Stutter Pattern
-            // Use variable timing array
-            const delay = variation.timeBetweenBeeps.slice(0, i).reduce((a, b) => a + b, 0);
-          } else if (currentSoundVariation === 4) { // Dual Tone
-            // Alternate between two frequencies
-            freq = variation.frequency[i % 2];
-          }
-          
-          playBeep(freq, variation.beepDuration, vol);
-        }, getBeepDelay(variation, i));
-      }
-    }
     
-    // Calculate delay for each beep based on variation
-    function getBeepDelay(variation, beepIndex) {
-      if (currentSoundVariation === 3 && Array.isArray(variation.timeBetweenBeeps)) {
-        // Stutter pattern with variable timing
-        return variation.timeBetweenBeeps.slice(0, beepIndex).reduce((a, b) => a + b, 0);
-      } else {
-        // Regular timing
-        const timing = Array.isArray(variation.timeBetweenBeeps) ? 
-                      variation.timeBetweenBeeps[0] : variation.timeBetweenBeeps;
-        return beepIndex * timing;
-      }
-    }
-    
-    // Cycle to next sound variation
-    function nextSoundVariation() {
-      currentSoundVariation = (currentSoundVariation + 1) % soundVariations.length;
-      showSoundVariation();
-      testCurrentVariation();
-    }
-    
-    // Cycle to previous sound variation
-    function prevSoundVariation() {
-      currentSoundVariation = (currentSoundVariation - 1 + soundVariations.length) % soundVariations.length;
-      showSoundVariation();
-      testCurrentVariation();
-    }
-    
-    // Show current sound variation in UI
-    function showSoundVariation() {
-      const navMsg = document.getElementById('nav-msg');
-      if (navMsg) {
-        const variation = soundVariations[currentSoundVariation];
-        const originalText = navMsg.textContent;
-        const originalVisibility = navMsg.style.visibility;
-        
-        navMsg.textContent = `SOUND: ${variation.name.toUpperCase()}`;
-        navMsg.style.visibility = 'visible';
-        navMsg.style.color = '#00FFFF';
-        
-        console.log(`🎵 Switched to: ${variation.name}`);
-        
-        // Restore UI after showing variation
-        setTimeout(() => {
-          navMsg.textContent = originalText;
-          navMsg.style.visibility = originalVisibility;
-          navMsg.style.color = '';
-        }, 1500);
-      }
-    }
-    
-    // Test current sound variation
-    function testCurrentVariation() {
-      if (!audioEnabled) return;
-      
-      const variation = soundVariations[currentSoundVariation];
-      
-      // Play a sample of the current variation
-      setTimeout(() => {
-        for (let i = 0; i < variation.beepsPerChunk; i++) {
-          setTimeout(() => {
-            let freq = variation.frequency;
-            
-            // Handle special variations for testing
-            if (currentSoundVariation === 4) { // Dual Tone
-              freq = variation.frequency[i % 2];
-            }
-            
-            playBeep(freq, variation.beepDuration, variation.volume);
-          }, getBeepDelay(variation, i));
-        }
-      }, 300);
-    }
 
-    // Toggle audio with enhanced feedback
-    function toggleAudio() {
-      audioEnabled = !audioEnabled;
-      console.log(`🔊 Audio ${audioEnabled ? 'ENABLED' : 'DISABLED'}`);
-      
-      const navMsg = document.getElementById('nav-msg');
-      if (navMsg) {
-        const originalText = navMsg.textContent;
-        const originalVisibility = navMsg.style.visibility;
-        
-        navMsg.textContent = audioEnabled ? 'SOUND ON' : 'SOUND OFF';
-        navMsg.style.visibility = 'visible';
-        navMsg.style.color = audioEnabled ? '#00FF00' : '#FF6666';
-        
-        // Play confirmation beep if enabling
-        if (audioEnabled) {
-          setTimeout(() => {
-            testBeep();
-          }, 200);
-        }
-        
-        // Restore UI
-        setTimeout(() => {
-          navMsg.textContent = originalText;
-          navMsg.style.visibility = originalVisibility;
-          navMsg.style.color = '';
-        }, 2000);
-      }
-    }
 
     // Enhanced audio function for page 8
     function playAudioForPage8() {
@@ -2301,10 +2112,6 @@ height: 100%;
         const currentText = subtitleText.substring(0, charIndex + 1);
         element.textContent = baseText + currentText;
         
-        // Play a subtle beep for typing (less frequent than decode beeps)
-        if (charIndex % 3 === 0) { // Every 3rd character
-          playBeep(1000, 0.02, 0.08); // Higher pitch, shorter duration, quieter
-        }
         
         charIndex++;
         if (charIndex >= len) {
@@ -2348,8 +2155,6 @@ height: 100%;
         // Update element with base content + decoded line
         element.textContent = baseContent + display.join('');
         
-        // Play synchronized beep for this chunk
-        playDecodingBeeps(index, Math.ceil(len / chunkSize));
         
         index++;
         if ((index * chunkSize) >= len) {
@@ -2426,11 +2231,6 @@ currentInterval = null;
       for (let i=0;i<len;i++) scrambled[i] = /\s/.test(text[i]) ? text[i] : chars[Math.floor(Math.random()*chars.length)];
       isAnimating = true; promptElem.style.visibility='hidden'; navMsg.style.visibility='hidden';
 
-      // Calculate total chunks for audio sync
-      const totalChunks = Math.ceil(len / chunkSize);
-      
-      // Initialize audio context on first user interaction
-      initAudioContext();
 
       currentInterval = setInterval(() => {
 const display = scrambled.slice();
@@ -2441,8 +2241,6 @@ for (let i=0;i<index;i++){
 for (let k=index*chunkSize;k<len;k++) display[k] = /\s/.test(text[k]) ? text[k] : chars[Math.floor(Math.random()*chars.length)];
 element.textContent = display.join('');
 
-// Play synchronized beep for this chunk
-playDecodingBeeps(index, totalChunks);
 
 index++;
 if ((index*chunkSize)>=len){
@@ -2507,11 +2305,6 @@ if ((index*chunkSize)>=len){
       for (let i=0;i<len;i++) scrambled[i] = /\s/.test(text[i]) ? text[i] : chars[Math.floor(Math.random()*chars.length)];
       isAnimating = true; promptElem.style.visibility='hidden'; navMsg.style.visibility='hidden';
 
-      // Calculate total chunks for audio sync
-      const totalChunks = Math.ceil(len / chunkSize);
-      
-      // Initialize audio context on first user interaction
-      initAudioContext();
 
       currentInterval = setInterval(() => {
         const display = scrambled.slice();
@@ -2522,8 +2315,6 @@ if ((index*chunkSize)>=len){
         for (let k=index*chunkSize;k<len;k++) display[k] = /\s/.test(text[k]) ? text[k] : chars[Math.floor(Math.random()*chars.length)];
         element.textContent = display.join('');
 
-        // Play synchronized beep for this chunk
-        playDecodingBeeps(index, totalChunks);
 
         index++;
         if ((index*chunkSize)>=len){
@@ -2795,6 +2586,7 @@ if ((index*chunkSize)>=len){
         // Check if this is timeline content first
         const pageContent = pages[pageIndex];
         console.log(`🔍 Page ${pageIndex + 1} content preview:`, pageContent.substring(0, 100));
+        console.log(`🔍 Page ${pageIndex + 1} full content:`, pageContent);
         const isTimelineContent = pageContent.includes('6BDM') || 
                                  pageContent.includes('2006:') || 
                                  pageContent.includes('2010:') || 
@@ -2894,7 +2686,7 @@ if ((index*chunkSize)>=len){
           // Use faster scrambling for page 0
           if (pageIndex === 0) {
             // Instant display for page 0 to speed up initial load
-            el.textContent = wrapTextForMobile(pages[pageIndex]);
+            el.textContent = isMobile ? wrapTextForMobile(pages[pageIndex]) : pages[pageIndex];
              // Call the callback immediately
              if (isCollateralMurderSlide) {
                console.log('Collateral Murder slide detected, starting animation...');
@@ -2980,8 +2772,14 @@ if ((index*chunkSize)>=len){
          hideVideo2Background();
        }
        
-       // Hide video3 on all pages (it only shows during A FILM BY animation)
-       hideVideo3Background();
+       // Show video3 on 6BDM slide (only the main 6BDM slide with timeline content)
+       if (pageContent.includes('6BDM: JULIAN ASSANGE AND THE PRICE OF TRUTH')) {
+         console.log('🎬 6BDM slide - Showing video3...');
+         showVideo3Background();
+       } else {
+         console.log(`🎬 Not 6BDM slide, hiding video3...`);
+         hideVideo3Background();
+       }
      }
 
     // Create persistent text that stays on screen
@@ -3019,6 +2817,9 @@ if ((index*chunkSize)>=len){
  document.addEventListener('pointerdown', (e)=>{ 
       if (e.target.id==='nav-prev'||e.target.id==='nav-next') return; 
       
+      // Unlock audio context on pointer interaction
+      unlockAudioContext();
+      
       // If in timeline reveal mode, clicking anywhere advances to next year section
       if (isInTimelineRevealMode) {
         showNextTimelineSection();
@@ -3046,6 +2847,9 @@ if ((index*chunkSize)>=len){
        // Debounce touch events to prevent double-firing
        if (now - lastTouchTime < 200) return;
        lastTouchTime = now;
+       
+       // Unlock audio context on mobile touch
+       unlockAudioContext();
        
        // If in timeline reveal mode, only right side advances to next year section
        if (isInTimelineRevealMode) {
@@ -3079,6 +2883,9 @@ if ((index*chunkSize)>=len){
        // Debounce touch events to prevent double-firing
        if (now - lastTouchTime < 200) return;
        lastTouchTime = now;
+       
+       // Unlock audio context on mobile touch
+       unlockAudioContext();
        
        // If in timeline reveal mode, only right side advances to next year section
        if (isInTimelineRevealMode) {
@@ -3228,10 +3035,6 @@ resetTextContainer();
       else if (k==='z'||k==='Z'){ toggleGreenOverlay('full'); }
       else if (k==='x'||k==='X'){ toggleGreenOverlay('half'); }
       else if (k==='c'||k==='C'){ toggleGreenOverlay('off'); }
-      else if (k==='m'||k==='M'){ toggleAudio(); }
-      else if (k==='t'||k==='T'){ testBeep(); }
-      else if (k==='q'||k==='Q'){ prevSoundVariation(); }
-      else if (k==='w'||k==='W'){ nextSoundVariation(); }
       else if (k==='f'||k==='F'){ toggleFullscreen(); }
       else if (k==='a'||k==='A'){ 
         console.log('🧪 A key pressed - testing audio...');
@@ -3296,6 +3099,13 @@ if (e.key==='1'||e.key==='2'||e.key==='3'){ colorIndex=parseInt(e.key,10)-1; app
     window.onload = () => {
       // Start presentation immediately when DOM is loaded
       startPage(0);
+      
+      // Initialize audio context for mobile devices
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        console.log('📱 Mobile device detected - preparing audio context');
+        // Pre-initialize audio context on mobile
+        initAudioContext();
+      }
       
       // Mute all audio by default
       document.addEventListener('keydown', (e) => {
