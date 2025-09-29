@@ -465,6 +465,14 @@ z-index: 1;
       mix-blend-mode: difference;
       display: none;
     }
+
+    /* Year styling - make years and year ranges larger */
+    .year-text {
+      font-size: 1.2em !important;
+      font-weight: bold;
+      color: #66FF66;
+      text-shadow: 0 0 2px #66FF66, 0 0 12px #66FF66;
+    }
     
     /* Video loading status */
     #video-loading {
@@ -2060,6 +2068,23 @@ height: 100%;
       return wrappedLines.join('\n');
     }
 
+    // Function to wrap years in spans for styling
+    function wrapYearsInSpans(element) {
+      if (!element) return;
+      
+      // Get the text content
+      let text = element.textContent;
+      
+      // Regular expression to match years in format YYYY: or YYYY-YYYY:
+      const yearRegex = /(\d{4}(?:-\d{4})?):/g;
+      
+      // Replace years with wrapped spans
+      const wrappedText = text.replace(yearRegex, '<span class="year-text">$1:</span>');
+      
+      // Set the innerHTML with the wrapped text
+      element.innerHTML = wrappedText;
+    }
+
     function scrambleFastChunks(element, text, onComplete) {
       if (currentInterval) {
 clearInterval(currentInterval);
@@ -2092,6 +2117,9 @@ if ((index*chunkSize)>=len){
   currentInterval = null;
   truncateTextToFit(element, text);
   isAnimating=false;
+  
+  // Wrap years in spans for styling
+  wrapYearsInSpans(element);
   
   // Only show "PRESS SPACEBAR TO CONTINUE" for first 2 pages
   if (currentPage < 2) {
@@ -2166,6 +2194,9 @@ if ((index*chunkSize)>=len){
           currentInterval = null;
           truncateTextToFit(element, text);
           isAnimating=false;
+          
+          // Wrap years in spans for styling
+          wrapYearsInSpans(element);
           
           // Only show "PRESS SPACEBAR TO CONTINUE" for first 2 pages
           if (currentPage < 2) {
@@ -2261,6 +2292,9 @@ if ((index*chunkSize)>=len){
           // Subsequent sections: append instantly with single line break
           const currentContent = timelineRevealState.element.textContent;
           timelineRevealState.element.textContent = currentContent + '\n' + currentSection;
+          
+          // Wrap years in spans for styling
+          wrapYearsInSpans(timelineRevealState.element);
           
           timelineRevealState.currentIndex++;
           
@@ -2433,8 +2467,7 @@ if ((index*chunkSize)>=len){
         const pageContent = pages[pageIndex];
         console.log(`🔍 Page ${pageIndex + 1} content preview:`, pageContent.substring(0, 100));
         console.log(`🔍 Page ${pageIndex + 1} full content:`, pageContent);
-        const isTimelineContent = pageContent.includes('6BDM') || 
-                                 pageContent.includes('2006:') || 
+        const isTimelineContent = pageContent.includes('2006:') || 
                                  pageContent.includes('2010:') || 
                                  pageContent.includes('2011-2012:') || 
                                  pageContent.includes('2017:') || 
@@ -2511,6 +2544,8 @@ if ((index*chunkSize)>=len){
           if (pageIndex === 0) {
             // Instant display for page 0 to speed up initial load
             el.textContent = isMobile ? wrapTextForMobile(pages[pageIndex]) : pages[pageIndex];
+            // Wrap years in spans for styling
+            wrapYearsInSpans(el);
              // Call the callback immediately
              if (isCollateralMurderSlide) {
                console.log('Collateral Murder slide detected, starting animation...');
