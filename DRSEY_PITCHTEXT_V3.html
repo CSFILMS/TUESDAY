@@ -710,6 +710,34 @@ z-index: 2 !important;
       }
     }
     
+    /* Scanline movement animation */
+    @keyframes scanlineMove {
+      0% {
+        transform: translateY(-100vh);
+      }
+      100% {
+        transform: translateY(100vh);
+      }
+    }
+    
+    /* Mobile styles for last slide image */
+    @media (max-width: 768px) {
+      #last-slide-image-container {
+        max-width: 85vw !important;
+        max-height: 75vh !important;
+        width: 85vw !important;
+        height: 75vh !important;
+        min-width: 80vw !important;
+        min-height: 70vh !important;
+        transform: translate(-50%, -60%) !important;
+      }
+      #last-slide-image {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+      }
+    }
+    
     /* Persistent text that stays on screen */
     #persistent-text {
       position: fixed;
@@ -2273,6 +2301,7 @@ if ((index*chunkSize)>=len){
         const currentSection = timelineRevealState.sections[timelineRevealState.currentIndex];
         const sectionNumber = timelineRevealState.currentIndex + 1;
         
+        console.log(`Showing timeline section ${sectionNumber}: ${currentSection.substring(0, 50)}...`);
         
         if (timelineRevealState.currentIndex === 0) {
           // First section (2006): decode with ultra-fast scrambling animation
@@ -2296,6 +2325,8 @@ if ((index*chunkSize)>=len){
           // Wrap years in spans for styling
           wrapYearsInSpans(timelineRevealState.element);
           
+          console.log(`Timeline section ${sectionNumber} displayed. Current index: ${timelineRevealState.currentIndex}, Total sections: ${timelineRevealState.sections.length}`);
+          
           timelineRevealState.currentIndex++;
           
           // Show navigation message for next section
@@ -2304,10 +2335,18 @@ if ((index*chunkSize)>=len){
             navMsg.style.fontSize = '0.9rem';
             navMsg.style.visibility = 'visible';
           } else {
-            // All sections revealed
-            finishTimelineReveal();
+            // All sections revealed - show final navigation message
+            console.log('All timeline sections have been displayed');
+            navMsg.innerHTML = 'PRESS SPACEBAR<br>TO CONTINUE';
+            navMsg.style.fontSize = '0.9rem';
+            navMsg.style.visibility = 'visible';
+            // Don't call finishTimelineReveal() here - let user press spacebar to finish
           }
         }
+      } else {
+        // No more sections - finish the timeline
+        console.log('No more timeline sections, finishing...');
+        finishTimelineReveal();
       }
     }
     
@@ -2581,6 +2620,65 @@ if ((index*chunkSize)>=len){
        }
        
        showImage(pageIndex);
+       
+       // Handle last slide - add collateral image and audio
+       if (pageIndex === pages.length - 1) {
+         console.log('Last slide detected - adding collateral image and audio');
+         
+         // Clear any existing last slide elements
+         const existingContainer = document.getElementById('last-slide-image-container');
+         const existingAudio = document.getElementById('last-slide-audio');
+         if (existingContainer) existingContainer.remove();
+         if (existingAudio) existingAudio.remove();
+         
+         // Create container for image with effects
+         const imageContainer = document.createElement('div');
+         imageContainer.id = 'last-slide-image-container';
+         imageContainer.style.cssText = `
+           position: fixed;
+           top: 50%;
+           left: 50%;
+           transform: translate(-50%, -50%);
+           max-width: 80vw;
+           max-height: 80vh;
+           z-index: 1;
+           pointer-events: none;
+           overflow: hidden;
+         `;
+         document.body.appendChild(imageContainer);
+         
+         // Add image with proper visual effects (matching lorem_new.html)
+         const img = document.createElement('img');
+         img.id = 'last-slide-image';
+         img.src = 'PHOTOS/photo_collateral.jpg';
+         img.style.cssText = `
+           width: 100%;
+           height: 100%;
+           object-fit: contain;
+           filter: brightness(0.7) sepia(1) hue-rotate(60deg) saturate(1.5);
+         `;
+         imageContainer.appendChild(img);
+         
+         // Add audio to body (more persistent)
+         const audio = document.createElement('audio');
+         audio.id = 'last-slide-audio';
+         audio.src = 'AUDIO/COLLATERAL_AUDIO.mp4';
+         audio.autoplay = true;
+         audio.loop = true;
+         audio.volume = 0.7;
+         audio.style.cssText = 'position: fixed; bottom: 0; left: 0; z-index: 1000;';
+         document.body.appendChild(audio);
+         
+         audio.play().catch(err => {
+           console.log('Last slide audio autoplay failed:', err);
+         });
+       } else {
+         // Clean up when not on last slide
+         const existingContainer = document.getElementById('last-slide-image-container');
+         const existingAudio = document.getElementById('last-slide-audio');
+         if (existingContainer) existingContainer.remove();
+         if (existingAudio) existingAudio.remove();
+       }
        
        // Audio disabled - no sounds
        if (pageIndex + 1 === 7) {
