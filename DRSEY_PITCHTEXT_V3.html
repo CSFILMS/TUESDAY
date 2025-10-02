@@ -738,7 +738,7 @@ z-index: 2 !important;
         min-height: 70vh !important;
         transform: translate(-50%, -60%) !important;
       }
-      #last-slide-video {
+      #last-slide-image {
         width: 100% !important;
         height: 100% !important;
         object-fit: contain !important;
@@ -2334,6 +2334,7 @@ if ((index*chunkSize)>=len){
           
           console.log(`Timeline section ${sectionNumber} displayed. Current index: ${timelineRevealState.currentIndex}, Total sections: ${timelineRevealState.sections.length}`);
           
+          // Increment index after displaying the section
           timelineRevealState.currentIndex++;
           
           // Show navigation message for next section
@@ -2654,20 +2655,17 @@ if ((index*chunkSize)>=len){
          `;
          document.body.appendChild(imageContainer);
          
-         // Add video with proper visual effects
-         const video = document.createElement('video');
-         video.id = 'last-slide-video';
-         video.src = 'J_HOLOGRAM.mp4';
-         video.autoplay = true;
-         video.loop = true;
-         video.muted = true;
-         video.style.cssText = `
+         // Add image with proper visual effects (matching lorem_new.html)
+         const img = document.createElement('img');
+         img.id = 'last-slide-image';
+         img.src = 'PHOTOS/photo_collateral.jpg';
+         img.style.cssText = `
            width: 100%;
            height: 100%;
            object-fit: contain;
            filter: brightness(0.7) sepia(1) hue-rotate(60deg) saturate(1.5);
          `;
-         imageContainer.appendChild(video);
+         imageContainer.appendChild(img);
          
          // Add audio to body (more persistent)
          const audio = document.createElement('audio');
@@ -2787,9 +2785,12 @@ if ((index*chunkSize)>=len){
       // Unlock audio context on pointer interaction
       unlockAudioContext();
       
-      // If in timeline reveal mode, clicking anywhere advances to next year section
+      // If in timeline reveal mode, only handle mouse events (let touch events be handled by touchend)
       if (isInTimelineRevealMode) {
-        showNextTimelineSection();
+        // Only handle mouse events, not touch events
+        if (e.pointerType === 'mouse') {
+          showNextTimelineSection();
+        }
         return;
       }
       
@@ -2818,12 +2819,9 @@ if ((index*chunkSize)>=len){
        // Unlock audio context on mobile touch
        unlockAudioContext();
        
-       // If in timeline reveal mode, only right side advances to next year section
+       // If in timeline reveal mode, just prevent default and return (let touchend handle it)
        if (isInTimelineRevealMode) {
          e.preventDefault(); // Prevent default touch behavior
-         if (e.touches[0].clientX >= window.innerWidth / 2) {
-           showNextTimelineSection();
-         }
          return;
        }
        
@@ -2878,12 +2876,9 @@ document.addEventListener('click', (e)=>{
       // Prevent click events that follow touch events too closely
       if (now - lastTouchTime < 300) return;
       
-      // If in timeline reveal mode, only right side advances to next year section
+      // If in timeline reveal mode, just prevent default and return (let touchend handle it)
       if (isInTimelineRevealMode) {
         e.preventDefault(); // Prevent any default click behavior
-        if (e.clientX >= window.innerWidth / 2) {
-          showNextTimelineSection();
-        }
         return;
       }
       
